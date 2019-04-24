@@ -9,19 +9,49 @@ F3_0  = 1;                      %Unused             -
 
 %% -- Variables -- %%
 c        = 299792458 ;             %m/s
-lambda_0 = f_0x/c;  % m
-w_0x     = 2*pi()*f_0x;             %Rad/s              - Laser Frequency
+lambda_0 = c/f_0x;                 %m
+w_0x     = 2*pi()*f_0x;            %Rad/s              - Laser Frequency
 w_0y     = 2*pi()*f_0y;
 t_0      = (t1+t2)/2;
-F_a      = 5.36*10^10;             % Vm^-1             - Atomic Field    
-SiO2.GVD = L*36.0*(10^-15)^2;        % s^2               - Group Velocity dispersion
-SiO2.TOD = L*27.0*(10^-15)^3;        % s^3               - Third Order Dispersion
-SiO2.n   = L*1.4533;
-SiO2.ng  = L*1.4672;
-fun_n    = @(lambda) sqrt( ((0.6961663*lambda.^2)/(lambda.^2 - 0.0684043^2)) + ...
-                           ((0.4079426*lambda.^2)/(lambda.^2 - 0.1162414^2)) + ...
-                           ((0.8974794*lambda.^2)/(lambda.^2 - 9.896161^2))  +  1);
-nind = fun_n(lambda_0); lambrange = linspace(0.2,7,1000); % \mu m
+F_a      = 5.36*10^10;             % Vm^-1             - Atomic Field  
+
+%========================================================================================%
+%% == Calculating the \phi_n components of \Phi(\omega-\omega_0) - CEP, GD, GVD, TOD == %%
+%========================================================================================%
+
+%Equation describing the refractive index of fused silica for wavelengths in the range of 0.21-6.7 \mu m
+%Since the equations use a wide variety of units for their calculation, we
+%must convert to match what we want (fs^n/mm)
+
+fun_n    = @(lambda) sqrt( ((0.6961663*(lambda*10^6)^2)/((lambda*10^6)^2 - 0.0684043^2)) + ...
+                           ((0.4079426*(lambda*10^6)^2)/((lambda*10^6)^2 - 0.1162414^2)) + ...
+                           ((0.8974794*(lambda*10^6)^2)/((lambda*10^6)^2 - 9.896161^2))  +  1); 
+n_ref = fun_n(lambda_0);
+%Take Derivatives of the function defining n, we need them for \Phi
+syms WavLen
+fun_nd1 = eval(['@(WavLen)' char(diff(fun_n(WavLen)))]);
+nd1     = fun_nd1(lambda_0)*(10^-6)
+fun_nd2 = eval(['@(WavLen)' char(diff(fun_nd1(WavLen)))]);
+nd2     = fun_nd2(lambda_0)*(10^-6)
+fun_nd3 = eval(['@(WavLen)' char(diff(fun_nd2(WavLen)))]);
+nd3     = fun_nd3(lambda_0)*(10^-6)
+clear WavLen
+                       
+%Graph of equation for the relevant range above - we don't really need this though
+nind = n_ref; lambrange = linspace(0.21,6.7,1000); % \mu m
+
+%n_ref= fun_n(lambda_0);                                                                  %units none
+GD    = 1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1)) * 1000                                 %units s/mm
+GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000                                          %units s^2/mm
+TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000   %units s^3/mm
+
+
+SiO2.n   = n_ref;
+SiO2.GD  = L*GD;         % s^2
+SiO2.GVD = L*GVD;        % s^2               - Group Velocity dispersion
+SiO2.TOD = L*TOD;        % s^3               - Third Order Dispersion
+
+
 
 A_t      = 1;                      % no unit           - Amplitude
 A_w      = 1;                      % no unit           - Amplitude
