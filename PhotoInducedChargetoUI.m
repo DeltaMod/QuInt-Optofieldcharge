@@ -56,6 +56,7 @@ end
 A_t      = 1;                      % no unit           - Amplitude
 A_w      = 1;                      % no unit           - Amplitude
 end
+F_0x = F_0;
 OCA = (t-t_0)/T_x; % Optical Cycle Axis around t_0, used to make plotting easier!
 
 %% New a_fun code @(t,T,w_0x) that is more universal and can be integrated

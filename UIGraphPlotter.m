@@ -3,6 +3,7 @@ if exist('POPOUT','var') == 1
 FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [480 270 960 540]; FIG.Name = PlotSelect{1};
 set(gca,'fontsize', 12)
 set(gca, 'FontName', 'Computer Modern')
+
 box on
 end
 %% PhotoinducedChargetoUI %%
@@ -12,6 +13,7 @@ if PlotSelect == "Gaussian Laser Pulse"
 cla reset
 plot((t-t_0)/T_x,a2n(:,1:N),'LineWidth',1.3)
 ylim([-1 1])
+set(gca, 'XLimSpec', 'Tight');
 xlabel('Optical Cycle ((t-t_0)/T)')
 ylabel('Vector Potential (and a^2n+1)')
 legend('a(t)^3','a(t)^5','a(t)^7','a(t)^9','Location','best' )
