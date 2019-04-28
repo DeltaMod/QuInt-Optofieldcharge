@@ -3,7 +3,7 @@ eps_0 = 8.85418782 * 10^-12;    %m^-3kg^-1s^4A^2    - Permittivity of free space
 Chi1  = (1:4).^2 - 1;           %No units           - First order susceptibility
 Chi2  = 1;                      %Unused             - Second order susceptibility
 Chi3  = 2*10^-22;               %m^2V^-2            - Third order susceptibility (This is for Silica)
-F_0   = linspace(0,F_0x,1000);  %Vm^-1              - Optical Field
+F_0   = linspace(0,F_0x,5000);  %Vm^-1              - Optical Field
 F2_0  = 1;                      %Unused             - 
 F3_0  = 1;                      %Unused             -
 
@@ -30,24 +30,24 @@ n_ref = fun_n(lambda_0);
 %Take Derivatives of the function defining n, we need them for \Phi
 syms WavLen
 fun_nd1 = eval(['@(WavLen)' char(diff(fun_n(WavLen)))]);
-nd1     = fun_nd1(lambda_0)*(10^-6)
+nd1     = fun_nd1(lambda_0)*(10^-6);
 fun_nd2 = eval(['@(WavLen)' char(diff(fun_nd1(WavLen)))]);
-nd2     = fun_nd2(lambda_0)*(10^-6)
+nd2     = fun_nd2(lambda_0)*(10^-6);
 fun_nd3 = eval(['@(WavLen)' char(diff(fun_nd2(WavLen)))]);
-nd3     = fun_nd3(lambda_0)*(10^-6)
+nd3     = fun_nd3(lambda_0)*(10^-6);
 clear WavLen
                        
 %Graph of equation for the relevant range above - we don't really need this though
 nind = n_ref; lambrange = linspace(0.21,6.7,1000); % \mu m
 
 %n_ref= fun_n(lambda_0);                                                                  %units none
-GD    = 1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1)) * 1000                                 %units s/mm
-GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000                                          %units s^2/mm
-TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000   %units s^3/mm
+GD    = 1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1)) * 1000;                                 %units s/mm
+GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000;                                          %units s^2/mm
+TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000;   %units s^3/mm
 
 
-SiO2.n   = n_ref;
-SiO2.GD  = L*GD;         % s^2
+SiO2.n   = n_ref;        % Refractive Index  - CEP replaces this later. 
+SiO2.GD  = L*GD;         % s^2               - Group Delay
 SiO2.GVD = L*GVD;        % s^2               - Group Velocity dispersion
 SiO2.TOD = L*TOD;        % s^3               - Third Order Dispersion
 

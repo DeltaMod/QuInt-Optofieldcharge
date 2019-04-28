@@ -25,14 +25,34 @@ Ncycx    = 1.5;                   % no unit           - Number of optical cycles
 Ncycy    = 1.5;                    % no unit           - Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
 F_a      = 5.36*10^10;             % Vm^-1             - Atomic Field
 L        = 0.1;                    % mm                - Length of material dispersion
-SiO2.GVD = L*36.0*(10^-15)^2;      % mm s^2            - Group Velocity dispersion
-SiO2.TOD = L*27.0*(10^-15)^3;      % mm s^3            - Third Order Dispersion
-SiO2.n   = L/L*1.4533;
-SiO2.ng  = L/L*1.4672;
-fun_n    = @(lambda) sqrt( ((0.6961663*lambda.^2)/(lambda.^2 - 0.0684043^2)) + ...
-                           ((0.4079426*lambda.^2)/(lambda.^2 - 0.1162414^2)) + ...
-                           ((0.8974794*lambda.^2)/(lambda.^2 - 9.896161^2))  +  1);
-n = fun_n(lambda_0); lambrange = linspace(0.2,7,1000); % \mu m
+fun_n    = @(lambda) sqrt( ((0.6961663*(lambda*10^6)^2)/((lambda*10^6)^2 - 0.0684043^2)) + ...
+                           ((0.4079426*(lambda*10^6)^2)/((lambda*10^6)^2 - 0.1162414^2)) + ...
+                           ((0.8974794*(lambda*10^6)^2)/((lambda*10^6)^2 - 9.896161^2))  +  1); 
+n_ref = fun_n(lambda_0);
+%Take Derivatives of the function defining n, we need them for \Phi
+syms WavLen
+fun_nd1 = eval(['@(WavLen)' char(diff(fun_n(WavLen)))]);
+nd1     = fun_nd1(lambda_0)*(10^-6);
+fun_nd2 = eval(['@(WavLen)' char(diff(fun_nd1(WavLen)))]);
+nd2     = fun_nd2(lambda_0)*(10^-6);
+fun_nd3 = eval(['@(WavLen)' char(diff(fun_nd2(WavLen)))]);
+nd3     = fun_nd3(lambda_0)*(10^-6);
+clear WavLen
+                       
+%Graph of equation for the relevant range above - we don't really need this though
+nind = n_ref; lambrange = linspace(0.21,6.7,1000); % \mu m
+
+%n_ref= fun_n(lambda_0);                                                                  %units none
+GD    = 1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1)) * 1000;                                 %units s/mm
+GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000;                                          %units s^2/mm
+TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000;   %units s^3/mm
+
+
+SiO2.n   = n_ref;        % Refractive Index  - CEP replaces this later. 
+SiO2.GD  = L*GD;         % s^2               - Group Delay
+SiO2.GVD = L*GVD;        % s^2               - Group Velocity dispersion
+SiO2.TOD = L*TOD;        % s^3               - Third Order Dispersion
+
 BPF     = 0;
 %% Note that lambrange is in \mu m, so if you want to find a refractive index at a wavelength lambda, simply use fun_n(lambda/10^-6)
 for n = 1:length(lambrange)
@@ -75,7 +95,8 @@ a = fun_a(t,T_x,w_0x);
 fun_a2n1 = @(t,T,n,w_0x) (exp(-2*log(2).*t.^2/T.^2).*cos(w_0x*t)).^(2*n+1);
 
 %Integrate for relevant values of n
-for n = 1:5
+QTERMS = 5;
+for n = 1:QTERMS
 a2(n) = w_0x*trapz(t,fun_a2n1(t,T_x,n,w_0x));
 end
 
@@ -115,8 +136,8 @@ fun_theta = @(theta) theta*pi(); %When you find out how to define the chirp, the
 fun_k = @(w,vp) w/vp;
 fun_klambda = @(lambda) 2*pi()/lambda;
 
-k(1) = w_0x/SiO2.ng;
-k(2) = c/SiO2.ng;
+k(1) = w_0x/SiO2.GD;
+k(2) = c/SiO2.GD;
 %online sources state that k' = 1/vg where vg = c/n_g
 
 SiO2.phi = [2.7 SiO2.GD SiO2.GVD SiO2.TOD 1]; 
@@ -190,12 +211,12 @@ waitbar(0.3,PROGBAR,'Calculating Dispersed E_t(t)');
 
 %% -- Calculating <a^2n+1> for a dispersed pulse -- %%
 waitbar(0.4,PROGBAR,'Calculating Dispersed Photoinduced Charge');
-for n = 1:4
+for n = 1:QTERMS
     a2disp(n) = w_0x*trapz(Estr.ttt.tdisp,real(Estr.ttt.Etdisp).^(2*n+1));
 end
 %% -- Equation 17 -- %%
 fun_Q = @(F_0x,F_a,a2disp,Aeff) eps_0*F_0x.*(F_0x/F_a).^2.*(a2disp(1) +(F_0x/F_a).^2*a2disp(2)...
-                                    +(F_0x/F_a).^4*a2disp(3)+(F_0x/F_a).^6*a2disp(4))*Aeff;
+                                    +(F_0x/F_a).^4*a2disp(3)+(F_0x/F_a).^6*a2disp(4)+(F_0x/F_a).^8*a2disp(5))*Aeff;
 Q = fun_Q(F_0 ,F_a,a2disp,Aeff);
                                 
 
@@ -274,7 +295,9 @@ Estw = FFTD(w,Ew,w_0x,'ftt',SiO2.phi,0);
 %% Dual Polarisation Equation %%
 fun_QDelt = @(F_0x,F_0y,a2n,Aeff) eps_0.*F_0x.*(F_0y/F_a).^2*(1/3 * a2n(1)+...
                                                              1/5 * a2n(2).*(F_0y./F_a).^2+...
-                                                             1/7 * a2n(3).*(F_0y./F_a).^4)*Aeff;
+                                                             1/7 * a2n(3).*(F_0y./F_a).^4+...
+                                                             1/9 * a2n(4).*(F_0y./F_a).^6+...
+                                                             1/11* a2n(5).*(F_0y./F_a).^8)*Aeff; 
                                                          
 anim = 1;
 
@@ -298,7 +321,7 @@ E_td.ttt.Etdshift = circshift(E_td.ttt.Etdisp,Deltn(n)); E_td.ttt.tdshift = circ
 %E_ti = FFTD(w,E_wi,'ftt',SiO2.phi,0);
 Edires = E_td.ttt.Etdshift+E_ti.ttt.Etdisp;
 
-for m = 1:4
+for m = 1:QTERMS
     a2harm(n,m) = w_0x*trapz(E_td.ttt.tdisp,real(Edires).^(2*m+1));
     a2pol(n,m)  = w_0x*trapz(E_td.ttt.tdisp,real(E_td.ttt.Etdshift).*real(E_ti.ttt.Etdisp).^(2*m)); 
 end

@@ -11,7 +11,7 @@ eps_0 = 8.85418782 * 10^-12;            %m^-3kg^-1s^4A^2    - Permittivity of fr
 Chi1  = (1:4).^2 - 1;                   %No units           - First order susceptibility
 Chi2  = 1;                              %Unused             - Second order susceptibility
 Chi3  = 2*10^-22;                       %m^2V^-2            - Third order susceptibility (This is for Silica)
-F_0x  = linspace(0,2.5,1000).*(10^10);  %Vm^-1              - Optical Field
+F_0  = linspace(0,2.5,1000).*(10^10);  %Vm^-1              - Optical Field
 F2_0  = 1;                              %Unused             - 
 F3_0  = 1;                              %Unused             -
 
@@ -56,7 +56,7 @@ end
 A_t      = 1;                      % no unit           - Amplitude
 A_w      = 1;                      % no unit           - Amplitude
 end
-F_0x = F_0;
+
 OCA = (t-t_0)/T_x; % Optical Cycle Axis around t_0, used to make plotting easier!
 
 %% New a_fun code @(t,T,w_0x) that is more universal and can be integrated
@@ -76,8 +76,8 @@ a_fun2n1 = @(t,t_0,T,n,w_0x) (exp(-2*log(2).*(t-t_0).^2/T.^2).*cos(w_0x*(t-t_0))
 
 %Then, we write a loop that integrates this for the different values of n
 %that we need.
-
-for n = 1:5
+QTERMS = 5; %Add this to the GUI later
+for n = 1:QTERMS
 %a2test(n) = w_0x*integral(@(time) a_fun2n1(time,T,n,w_0x),-inf+t_0,inf-t_0,'Waypoints',t) %This gives the EXACT same answer as below, making it redundant
 a2(n) = w_0x*trapz(t,a_fun2n1(t,t_0,T_x,n,w_0x));
 end
@@ -85,7 +85,7 @@ end
 Ncyc2 = linspace(1,3.5,2*length(t));
 T2 = (Ncyc2*2*pi())./w_0x;
 waitbar(0.6,PROGBAR,['Calculating <a^2n+1> for Ncyc \in [', num2str(Ncyc2(1)),',',num2str(Ncyc2(end)),']']); pause(0.2);
-for n = 1:4
+for n = 1:QTERMS
     for Nc = 1:length(T2)  
         ta2 = linspace(0,20*T2(Nc),1000); %time axis 2, because t2 interfers with the UI code
         t2_0 = mean(ta2);
@@ -100,10 +100,42 @@ end
 
 waitbar(0.9,PROGBAR,['Calculating Resultant Photoinduced Charge']); pause(0.2);
 %% -- Equation 17 -- %%
-Q = eps_0*F_0x.*(F_0x/F_a).^2.*(a2(1) +(F_0x/F_a).^2*a2(2)...
-                                    +(F_0x/F_a).^4*a2(3))*Aeff;
+%Q = eps_0*F_0.*(F_0/F_a).^2.*(a2(1) +(F_0/F_a).^2*a2(2)...
+                                    %+(F_0/F_a).^4*a2(3)+(F_0/F_a).^6*a2(4)+(F_0/F_a).^8*a2(5))*Aeff;
 
-                                
+for n  = 1:QTERMS                                
+avecFN{n} = ['a',num2str(2*n+1)];
+end
+
+QSUM = 0;
+for n = 1:QTERMS
+ATermsQ.(avecFN{n}) = Aeff*eps_0*F_0.*(F_0/F_a).^(2*(n-1)+2)*a2(n);             
+QSUM = QSUM+ATermsQ.(avecFN{n});
+end
+Q = QSUM; clear QSUM;
+%% Find where which <a^2n+1> term becomes dominant %%
+OLDTERM = 1;
+
+for i = 1:length(ATermsQ.(avecFN{1}))
+for n = 1:length(avecFN)
+TermValCurr(n) = ATermsQ.(avecFN{n})(i);
+end
+[Max,Ind(i)]  = max(TermValCurr);
+end
+clear Max; clear TermValCurr; 
+
+for n = 1:length(avecFN)
+Temp = find(Ind==n);
+if isempty(Temp) == 0
+    if 1<Temp(1)
+    Temp = [Temp(1)-1 Temp];
+    end
+    ADOMN.(avecFN{n}) = Temp;
+else
+    ADOMN.(avecFN{n}) = [ADOMN.(avecFN{n-1})(end)];
+end
+end
+
 a2n(1,:) = a;
 for n = 1:4
 a2n(n+1,:) = a_fun2n1(t,t_0,T_x,n,w_0x);
@@ -131,10 +163,10 @@ T_x = (Ncycx.*2*pi())/w_0x;
 for n = 1:5
 a2(n) = w_0x*integral(@(time) a_fun2n1(time,T_x(Nc),n,w_0x),t(1),t(N));
 end
-Q(Nc,:) = eps_0*F_0x.*(F_0x/F_a).^2.*(a2(1) +(F_0x/F_a).^2*a2(2)...
-                                    +(F_0x/F_a).^4*a2(3))*Aeff;
+Q(Nc,:) = eps_0*F_0.*(F_0/F_a).^2.*(a2(1) +(F_0/F_a).^2*a2(2)...
+                                    +(F_0/F_a).^4*a2(3))*Aeff;
  
-plot(F_0x,Q(Nc,:));
+plot(F_0,Q(Nc,:));
 grid on
 hold on
 xlabel('Optical Field [Vm^-^1]')
