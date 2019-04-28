@@ -23,7 +23,7 @@ function varargout = KhurginUI(varargin)
 
 % Edit the above text to modify the response to help KhurginUI
 
-% Last Modified by GUIDE v2.5 19-Feb-2019 16:15:11
+% Last Modified by GUIDE v2.5 28-Apr-2019 12:52:43
 
 %% How to add new variable
 %REPLACE = str2num(get(hObject,'String'))*10^mag;
@@ -865,6 +865,35 @@ run UIConsoleOutput; drawnow;
 % --- Executes during object creation, after setting all properties.
 function UICurrentDeltn_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to UICurrentDeltn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function UIORD_Callback(hObject, eventdata, handles)
+% hObject    handle to UIORD (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+ORD = str2num(get(hObject,'String'));
+assignin('base','ORD',ORD);
+VAR = evalin('base','VAR'); Index = find(ismember(VAR.Name, 'ORD'));
+VAR.Handle(Index) = ORD/VAR.Mag(Index); VAR.Dat(Index) = ORD; assignin('base','VAR',VAR)
+guihandles.Var.ORD = ORD;
+CONSOLECALLBACK = ['Setting ORD = ', num2str(guihandles.Var.ORD)]; 
+run UIConsoleOutput; drawnow;
+% Hints: get(hObject,'String') returns contents of UIORD as text
+%        str2double(get(hObject,'String')) returns contents of UIORD as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function UIORD_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to UIORD (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
