@@ -1,10 +1,6 @@
 %% This UI Document is used to plot the graphs, and nothing else! %%
-if exist('POPOUT','var') == 1
-FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [480 270 960 540]; FIG.Name = PlotSelect{1};
-set(gca,'fontsize', 12)
-set(gca, 'FontName', 'Computer Modern')
-
-box on
+if exist('POPOUT','var') == 1 %Old Pos [525 270 870 540] %Use for simple photo [450 270 720 540]
+FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 920 540]; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
 end
 %% PhotoinducedChargetoUI %%
 if SimSelect == "Simple Photoinduced Charge"
@@ -16,8 +12,8 @@ ylim([-1 1])
 set(gca, 'XLimSpec', 'Tight');
 xlabel('Optical Cycle ((t-t_0)/T)')
 ylabel('Vector Potential (and a^2n+1)')
-legend('a(t)^3','a(t)^5','a(t)^7','a(t)^9','Location','best' )
-grid on 
+legend({'a(t)^3','a(t)^5','a(t)^7','a(t)^9'},'Location','best','FontSize',14)
+ 
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "<a^2n+1>"; FIG = figure(2);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,3); end
@@ -26,19 +22,65 @@ cla reset;
 semilogy(Ncyc2,Vpota(:,:))
 hold on
 %axis([1 2.5 10^-6 10^0])
-grid on
-legend('<a^3>','<a^5>','<a^7>','<a^9>','Location','best' )
+
+legend('<a^3>','<a^5>','<a^7>','<a^9>','<a^3>','Location','best' )
 xlabel('Number of Optical Cycles (t/T)')
 ylabel('Vector Potential momenta')
 end
 
-if exist('UIRUN','var') == 0; PlotSelect = "Photoinduced Charge";  FIG = figure(3); clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(2,3); end
+
+if exist('UIRUN','var') == 0; PlotSelect = "<a^2n+1> Term Contributions to Charge";  FIG = figure(3); clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(2,3); end
+if PlotSelect == "<a^2n+1> Term Contributions to Charge"
+    cla reset
+
+for n = 1:length(avecFN)
+semilogy(F_0,ATermsQ.(avecFN{n}),'HandleVisibility','off')
+hold on
+end
+
+set(gca,'ColorOrderIndex',1)
+for n = 1:length(avecFN)
+area(F_0(ADOMN.(avecFN{n})),ATermsQ.(avecFN{n})(ADOMN.(avecFN{n})),'FaceAlpha',0.3,'LineStyle','None')
+hold on
+end
+
+for n = length(avecFN):-1:1
+    if length(ADOMN.(avecFN{n})) > 2
+        AQMax = max(ATermsQ.(avecFN{n}));
+        break
+    end
+end
+
+set(gca,'YScale','log')
+xlim([0 max(F_0)])
+ylim([10^-20 AQMax])
+clear AQMax;
+finstr = [];
+for n = 1:length(avecFN)
+tempstr = ['a',num2str(2*n+1)];
+for i = 2:length(tempstr)
+    tempstr2 = ['^',tempstr(i)]; finstr = [finstr,tempstr2];
+end
+LegNames{n} = ['<a',finstr,'>'] 
+finstr = [];
+end
+clear tempstr; clear finstr;
+LEG = legend({LegNames{1:10},'etc'},'Location','Best');
+title(LEG,'Greatest Term Contribution')
+xlabel('Field Strength [Vm^-^1]')
+ylabel('Contribution to Q by <a^2n+1> term [C]')
+
+end
+
+          
+
+if exist('UIRUN','var') == 0; PlotSelect = "Photoinduced Charge";  FIG = figure(4); clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(2,3); end
 if PlotSelect == "Photoinduced Charge"
     cla reset
-plot(F_0,Q);
-grid on
+plot(F_0,Q/(10^-15));
+
 xlabel('Optical Field [Vm^-^1]')
-ylabel('Photinduced Charge [C]')
+ylabel('Photoinduced Charge [fC]')
 end
 end
 
@@ -51,14 +93,14 @@ if PlotSelect == "Non Fourier Et(t)"
 cla reset;
 %subplot(1,2,1)
 plot(t-t_0,real(Et)); xlabel('time [s]'); ylabel('E_t(t)'); fprintf(['\n','Plotting [',PlotSelect{1},']']);
-axis tight
-grid on
+
+
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "E_t FFT Plot"; FIG = figure(2);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(2,3); end
 if PlotSelect == "E_t FFT Plot"
 cla reset;
-plot(Estr.ttt.w,abs(Estr.ttt.Ew)); grid on; fprintf(['\n','Plotting [',PlotSelect{1},']']);
+plot(Estr.ttt.w,abs(Estr.ttt.Ew)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('\omega [rad/s]')
 ylabel('Amplitude')
 hold on
@@ -68,10 +110,10 @@ end
 if exist('UIRUN','var') == 0; PlotSelect = "E_t Final Applied Dispersion"; FIG = figure(3);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,2); end 
 if PlotSelect == "E_t Final Applied Dispersion"
 cla reset;
-plot(linspace(t1,t2,length(Estr.ttt.tdisp))-t_0,real(Estr.ttt.Etdisp));grid on; fprintf(['\n','Plotting [',PlotSelect{1},']']);
+plot(linspace(t1,t2,length(Estr.ttt.tdisp))-t_0,real(Estr.ttt.Etdisp)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('s[fs]')
 ylabel('amplitude')
-grid on
+
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "E_t(t)^2n+1 After Dispersion"; FIG = figure(4);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,1); end
@@ -83,14 +125,14 @@ ylim([-1 1])
 xlabel('Optical Cycle ((t-t_0)/T)')
 ylabel('Vector Potential (and a^2n+1)')
 legend('E_t(t)','E_t(t)^3','E_t(t)^5','E_t(t)^7','E_t(t)^9','Location','best' )
-grid on 
+ 
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "Post Dispersion Photoinduced Charge";  FIG = figure(5); clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(2,3); end
 if PlotSelect == "Post Dispersion Photoinduced Charge"
     cla reset
 plot(F_0,abs(Q));
-grid on
+
 xlabel('Optical Field [Vm^-^1]')
 ylabel('Photinduced Charge [C]')
 end
@@ -98,11 +140,10 @@ end
 if exist('UIRUN','var') == 0; PlotSelect = "E_w IFFT Dispersion"; FIG = figure(6);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(1,1); end 
 if PlotSelect ==  "E_w IFFT Dispersion"
 cla reset;
-plot(Estw.ftt.tdisp,real(Estw.ftt.Etdisp)); grid on; fprintf(['\n','Plotting [',PlotSelect{1},']']);
+plot(Estw.ftt.tdisp,real(Estw.ftt.Etdisp)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
 legend(['\phi_2 = ' num2str(SiO2.phi(3),'%.4g')])
 xlabel('Time [s]')
 ylabel('Amplitude')
-grid on
 end
 
 
@@ -133,7 +174,6 @@ plt7 = plot(Delt(SldInd)./(N_Delt/N),QPoldt/max(QPol)+1,'k*');
 fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('\Delta t [s]')
 ylabel('Sum of Vector Potential')
-grid on
 axis([ETI.ttt.tdisp(1) ETI.ttt.tdisp(end) -3 3])
 hold off
 end
@@ -146,8 +186,8 @@ plot(Delt,real(QHarm));fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('\Delta t [s]')
 ylabel('Q(\Delta t [C])')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
-grid on
-axis tight
+
+
 %figure(1)
 %plot(1,1)
 end
@@ -164,8 +204,6 @@ fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('\Delta t [s]')
 ylabel('Vector Potential Momenta')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
-grid on
-axis tight
 %figure(1)
 %plot(1,1)
 end
@@ -177,7 +215,21 @@ plot(Delt,real(QPol));fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('\Delta t [s]')
 ylabel('Q(\Delta t) [C]')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
-grid on
-axis tight
+
 end
+end
+
+if  strcmp('auto',get(gca,'XLimMode')) && strcmp('auto',get(gca,'YLimMode')) == 1
+    axis tight
+    disp('setting axis to tight')
+end
+grid on
+set(gca,'fontsize', 12)
+set(gca, 'FontName', 'Computer Modern')
+set(gca,'Box','on')
+
+if exist('POPOUT') == 1
+InSet = [0.076    0.115    0.076       0]; %Fontsize 12
+%InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
