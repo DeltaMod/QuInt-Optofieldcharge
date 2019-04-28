@@ -6,6 +6,7 @@
 if exist('UIRUN','var') == 0
     disp('UIRUN =/= 1, running with default variables.')
 SimSelect = "Dispersion and Photoinduced Charge";
+addpath(genpath(fileparts(which('Variables.m'))))
 %% -- Constants -- &&
 fprintf('Running non-UI version -- Check Variables')
 eps_0    = 8.85418782 * 10^-12;    %m^-3kg^-1s^4A^2    - Permittivity of free space
@@ -215,10 +216,11 @@ for n = 1:QTERMS
     a2disp(n) = w_0x*trapz(Estr.ttt.tdisp,real(Estr.ttt.Etdisp).^(2*n+1));
 end
 %% -- Equation 17 -- %%
-fun_Q = @(F_0x,F_a,a2disp,Aeff) eps_0*F_0x.*(F_0x/F_a).^2.*(a2disp(1) +(F_0x/F_a).^2*a2disp(2)...
-                                    +(F_0x/F_a).^4*a2disp(3)+(F_0x/F_a).^6*a2disp(4)+(F_0x/F_a).^8*a2disp(5))*Aeff;
-Q = fun_Q(F_0 ,F_a,a2disp,Aeff);
-                                
+%fun_Q2 = @(F_0x,F_a,a2disp,Aeff) eps_0*F_0x.*(F_0x/F_a).^2.*(a2disp(1) +(F_0x/F_a).^2*a2disp(2)...
+%                                   +(F_0x/F_a).^4*a2disp(3)+(F_0x/F_a).^6*a2disp(4)+(F_0x/F_a).^8*a2disp(5))*Aeff;
+%Q = fun_Q2(F_0,F_a,a2disp,Aeff);
+Q = fun_Q(F_0,F_a,a2disp,Aeff,QTERMS);  
+
 
 Etf2n(1,:) = real(Estr.ttt.Etdisp);
 for n = 1:4
@@ -293,12 +295,12 @@ Estw = FFTD(w,Ew,w_0x,'ftt',SiO2.phi,0);
 
 
 %% Dual Polarisation Equation %%
-fun_QDelt = @(F_0x,F_0y,a2n,Aeff) eps_0.*F_0x.*(F_0y/F_a).^2*(1/3 * a2n(1)+...
-                                                             1/5 * a2n(2).*(F_0y./F_a).^2+...
-                                                             1/7 * a2n(3).*(F_0y./F_a).^4+...
-                                                             1/9 * a2n(4).*(F_0y./F_a).^6+...
-                                                             1/11* a2n(5).*(F_0y./F_a).^8)*Aeff; 
-                                                         
+%fun_QDelt2 = @(F_0x,F_0y,a2n,Aeff) eps_0.*F_0x.*(F_0y/F_a).^2*(1/3 * a2n(1)+...
+%                                                              1/5 * a2n(2).*(F_0y./F_a).^2+...
+%                                                              1/7 * a2n(3).*(F_0y./F_a).^4+...
+%                                                              1/9 * a2n(4).*(F_0y./F_a).^6+...
+%                                                              1/11* a2n(5).*(F_0y./F_a).^8)*Aeff; 
+                                                     
 anim = 1;
 
 N_Delt = Delt2 - Delt1 + 1;
@@ -327,8 +329,9 @@ for m = 1:QTERMS
 end
 
 
-QHarm(n) = fun_Q(F_0(end),F_a,a2harm(n,:),Aeff);
-QPol(n)  = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,a2pol(n,:),Aeff);
+QHarm(n) = fun_Q(F_0(end),F_a,a2harm(n,:),Aeff,QTERMS);
+QPol(n)  = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,F_a,a2pol(n,:),Aeff,QTERMS);
+ 
 %% In case you want animation of the transformation here :)
 
 

@@ -4,6 +4,7 @@
     
 if exist('UIRUN','var') == 0
     disp('UIRUN =/= 1, running with default variables.')
+    addpath(genpath(fileparts(which('Variables.m'))))
  SimSelect = "Simple Photoinduced Charge";
    % close all;
 %% -- Constants -- &&
@@ -19,7 +20,7 @@ F3_0  = 1;                              %Unused             -
 %% -- Variable Parameters -- %%
 
 f_0x = 375*10^12;                %Hz                 - Laser frequency (From our lab)
-w_0x = 2*pi()*f_0x;               %Rad/s              - Laser Frequency
+w_0x = 2*pi()*f_0x;              %Rad/s              - Laser Frequency
 c        = 299792458 ;          %m/s
 lambda_0 = c/f_0x;               % m
 Aeff  = 2.3*10^-12;             %m^2                - Effective area 
@@ -102,17 +103,8 @@ waitbar(0.9,PROGBAR,['Calculating Resultant Photoinduced Charge']); pause(0.2);
 %% -- Equation 17 -- %%
 %Q = eps_0*F_0.*(F_0/F_a).^2.*(a2(1) +(F_0/F_a).^2*a2(2)...
                                     %+(F_0/F_a).^4*a2(3)+(F_0/F_a).^6*a2(4)+(F_0/F_a).^8*a2(5))*Aeff;
+Q = fun_Q(F_0,F_a,a2,Aeff,QTERMS);
 
-for n  = 1:QTERMS                                
-avecFN{n} = ['a',num2str(2*n+1)];
-end
-
-QSUM = 0;
-for n = 1:QTERMS
-ATermsQ.(avecFN{n}) = Aeff*eps_0*F_0.*(F_0/F_a).^(2*(n-1)+2)*a2(n);             
-QSUM = QSUM+ATermsQ.(avecFN{n});
-end
-Q = QSUM; clear QSUM;
 %% Find where which <a^2n+1> term becomes dominant %%
 OLDTERM = 1;
 
