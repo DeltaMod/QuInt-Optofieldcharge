@@ -96,8 +96,8 @@ a = fun_a(t,T_x,w_0x);
 fun_a2n1 = @(t,T,n,w_0x) (exp(-2*log(2).*t.^2/T.^2).*cos(w_0x*t)).^(2*n+1);
 
 %Integrate for relevant values of n
-QTERMS = 5;
-for n = 1:QTERMS
+
+for n = 1:ORD
 a2(n) = w_0x*trapz(t,fun_a2n1(t,T_x,n,w_0x));
 end
 
@@ -141,7 +141,7 @@ k(1) = w_0x/SiO2.GD;
 k(2) = c/SiO2.GD;
 %online sources state that k' = 1/vg where vg = c/n_g
 
-SiO2.phi = [2.7 SiO2.GD SiO2.GVD SiO2.TOD 1]; 
+SiO2.phi = [pi() SiO2.GD SiO2.GVD SiO2.TOD 1]; 
 
 fun_phiw = @(phi_0, phi_1, phi_2, phi_3,w,w_0x) phi_0                 +...    %phi_0 is Carrier Envelope Phase - Values of pi() 
                                                phi_1.*((w-w_0x))      +...    %phi_1 is the Group Delay 
@@ -162,7 +162,7 @@ Et = fun_Et(A_t,t,t_0,T_x,w_0x,theta);
 Ew = fun_Ew(A_w,w,W_x,w_0x,phiw);
 %Note: These are related to each other by: \delta w*\delta t =4ln(2), that is W*T = 4*log(2) which means we get: W  = 4*log(2)/T;
 %T = (Ncycx*2*pi())/w_0x => W = 4*log(2)*w_0x/(Ncycx*2*pi()) 
-PROGBAR = waitbar(0.1,'Calculating E_t(t)'); pause(0.2);
+PROGBAR = waitbar(0.1,'Calculating E_t(t)'); %pause(0.2);
 
 
 %% if PlotSelect == "Non Fourier Et(t)"
@@ -175,7 +175,7 @@ PROGBAR = waitbar(0.1,'Calculating E_t(t)'); pause(0.2);
 %%-- Time to test conversions between the two --%%
 %% -- E_t -> FFT = E_w -> Band Filter + IFFT = E_t -- %% 
 
-waitbar(0.2,PROGBAR,'Calculating fft(E_t)');pause(0.2);
+waitbar(0.2,PROGBAR,'Calculating fft(E_t)');%pause(0.2);
 
 Estr = FFTD(t,Et,w_0x,'ttt',SiO2.phi,0); %This generates:  | Estr.ttt.Et & Estr.ttt.t | Estr.ttt.Ew & Estr.ttf.w | Estr.ttt.Etdisp & Estr.ttt.tdisp|
 
@@ -212,14 +212,14 @@ waitbar(0.3,PROGBAR,'Calculating Dispersed E_t(t)');
 
 %% -- Calculating <a^2n+1> for a dispersed pulse -- %%
 waitbar(0.4,PROGBAR,'Calculating Dispersed Photoinduced Charge');
-for n = 1:QTERMS
+for n = 1:ORD
     a2disp(n) = w_0x*trapz(Estr.ttt.tdisp,real(Estr.ttt.Etdisp).^(2*n+1));
 end
 %% -- Equation 17 -- %%
 %fun_Q2 = @(F_0x,F_a,a2disp,Aeff) eps_0*F_0x.*(F_0x/F_a).^2.*(a2disp(1) +(F_0x/F_a).^2*a2disp(2)...
 %                                   +(F_0x/F_a).^4*a2disp(3)+(F_0x/F_a).^6*a2disp(4)+(F_0x/F_a).^8*a2disp(5))*Aeff;
 %Q = fun_Q2(F_0,F_a,a2disp,Aeff);
-Q = fun_Q(F_0,F_a,a2disp,Aeff,QTERMS);  
+Q = fun_Q(F_0,F_a,a2disp,Aeff,ORD);  
 
 
 Etf2n(1,:) = real(Estr.ttt.Etdisp);
@@ -298,7 +298,7 @@ Estw = FFTD(w,Ew,w_0x,'ftt',SiO2.phi,0);
 %fun_QDelt2 = @(F_0x,F_0y,a2n,Aeff) eps_0.*F_0x.*(F_0y/F_a).^2*(1/3 * a2n(1)+...
 %                                                              1/5 * a2n(2).*(F_0y./F_a).^2+...
 %                                                              1/7 * a2n(3).*(F_0y./F_a).^4+...
-%                                                              1/9 * a2n(4).*(F_0y./F_a).^6+...
+%                                                              1/9 QPol2(n) = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,F_a,a2pol(n,:),Aeff,ORD)  * a2n(4).*(F_0y./F_a).^6+...
 %                                                              1/11* a2n(5).*(F_0y./F_a).^8)*Aeff; 
                                                      
 anim = 1;
@@ -323,14 +323,14 @@ E_td.ttt.Etdshift = circshift(E_td.ttt.Etdisp,Deltn(n)); E_td.ttt.tdshift = circ
 %E_ti = FFTD(w,E_wi,'ftt',SiO2.phi,0);
 Edires = E_td.ttt.Etdshift+E_ti.ttt.Etdisp;
 
-for m = 1:QTERMS
+for m = 1:ORD
     a2harm(n,m) = w_0x*trapz(E_td.ttt.tdisp,real(Edires).^(2*m+1));
     a2pol(n,m)  = w_0x*trapz(E_td.ttt.tdisp,real(E_td.ttt.Etdshift).*real(E_ti.ttt.Etdisp).^(2*m)); 
 end
 
 
-QHarm(n) = fun_Q(F_0(end),F_a,a2harm(n,:),Aeff,QTERMS);
-QPol(n)  = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,F_a,a2pol(n,:),Aeff,QTERMS);
+QHarm(n) = fun_Q(F_0(end),F_a,a2harm(n,:),Aeff,ORD);
+QPol(n)  = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,F_a,a2pol(n,:),Aeff,ORD);
  
 %% In case you want animation of the transformation here :)
 
@@ -371,7 +371,7 @@ end
 %script to make it easier to change/add things (without having to do
 %everything twice
 
-waitbar(1,PROGBAR,'DONE!'); pause(0.5);
+waitbar(1,PROGBAR,'DONE!'); %pause(0.5);
 delete(PROGBAR)
 run UIGraphPlotter
 

@@ -65,7 +65,7 @@ LegNames{n} = ['<a',finstr,'>']
 finstr = [];
 end
 clear tempstr; clear finstr;
-LEG = legend({LegNames{1:10},'etc'},'Location','Best');
+LEG = legend({LegNames{:},'etc'},'Location','Best');
 title(LEG,'Greatest Term Contribution')
 xlabel('Field Strength [Vm^-^1]')
 ylabel('Contribution to Q by <a^2n+1> term [C]')
@@ -131,10 +131,44 @@ end
 if exist('UIRUN','var') == 0; PlotSelect = "Post Dispersion Photoinduced Charge";  FIG = figure(5); clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(2,3); end
 if PlotSelect == "Post Dispersion Photoinduced Charge"
     cla reset
-plot(F_0,abs(Q));
+    plot(F_0,(Q)/10^-15);
 
 xlabel('Optical Field [Vm^-^1]')
-ylabel('Photinduced Charge [C]')
+ylabel('Photinduced Charge [fC]')
+
+if exist('THESISGRAPH') == 1
+    if exist('PLOTDONE') == 0
+    if exist('TGRPH') == 0
+        TGRPH = 1;
+        clear Qpc
+        clear Lrng
+    end
+    while TGRPH < 10
+LLeg{TGRPH} = ['L = ',num2str(L),'+',num2str(TGRPH*2e-11),' mm'];
+Lrng(TGRPH) = L;
+L = L+2e-11;
+Qpc(TGRPH,:) = Q;
+TGRPH = TGRPH + 1;
+run Variables
+run DispersionToUI
+    end
+
+
+figure(1)
+plot(F_0,(Qpc)/10^-15);
+legend(LLeg)
+
+xlabel('Field Strength (Vm^-^1)')
+ylabel('Photoinduced Charge [fC]')
+
+figure(2)
+plot(Lrng,Qpc(:,end))
+
+
+clear TGRPH
+    end
+    PLOTDONE = 1;
+end
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "E_w IFFT Dispersion"; FIG = figure(6);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(1,1); end 

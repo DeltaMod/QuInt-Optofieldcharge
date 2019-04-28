@@ -77,8 +77,7 @@ a_fun2n1 = @(t,t_0,T,n,w_0x) (exp(-2*log(2).*(t-t_0).^2/T.^2).*cos(w_0x*(t-t_0))
 
 %Then, we write a loop that integrates this for the different values of n
 %that we need.
-QTERMS = 5; %Add this to the GUI later
-for n = 1:QTERMS
+for n = 1:ORD
 %a2test(n) = w_0x*integral(@(time) a_fun2n1(time,T,n,w_0x),-inf+t_0,inf-t_0,'Waypoints',t) %This gives the EXACT same answer as below, making it redundant
 a2(n) = w_0x*trapz(t,a_fun2n1(t,t_0,T_x,n,w_0x));
 end
@@ -86,7 +85,7 @@ end
 Ncyc2 = linspace(1,3.5,2*length(t));
 T2 = (Ncyc2*2*pi())./w_0x;
 waitbar(0.6,PROGBAR,['Calculating <a^2n+1> for Ncyc \in [', num2str(Ncyc2(1)),',',num2str(Ncyc2(end)),']']); pause(0.2);
-for n = 1:QTERMS
+for n = 1:ORD
     for Nc = 1:length(T2)  
         ta2 = linspace(0,20*T2(Nc),1000); %time axis 2, because t2 interfers with the UI code
         t2_0 = mean(ta2);
@@ -103,7 +102,7 @@ waitbar(0.9,PROGBAR,['Calculating Resultant Photoinduced Charge']); pause(0.2);
 %% -- Equation 17 -- %%
 %Q = eps_0*F_0.*(F_0/F_a).^2.*(a2(1) +(F_0/F_a).^2*a2(2)...
                                     %+(F_0/F_a).^4*a2(3)+(F_0/F_a).^6*a2(4)+(F_0/F_a).^8*a2(5))*Aeff;
-Q = fun_Q(F_0,F_a,a2,Aeff,QTERMS);
+Q = fun_Q(F_0,F_a,a2,Aeff,ORD);
 
 %% Find where which <a^2n+1> term becomes dominant %%
 OLDTERM = 1;
