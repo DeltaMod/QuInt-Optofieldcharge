@@ -1,5 +1,5 @@
 %% This script is used to re-initialise the UI, in case you need to reset or initialise - Run at start/reset
-addpath('SavedPresets') 
+addpath(genpath(fileparts(which('Variables.m'))))
 
 if exist('LOADPRESET','var') == 0
 DATAIMPORT = readtable('SessionRestore.dat','Delimiter',';');
@@ -23,7 +23,8 @@ SimulationSelect = [{'Simple Photoinduced Charge'}
              
 PlotSelectList{1} = [{'Gaussian Laser Pulse'        }
                     {'<a^2n+1>'                     }
-                    {'Photoinduced Charge'          }];
+                    {'Photoinduced Charge'          }
+                    {'<a^2n+1> Term Contributions to Charge'}];
 PlotSelectList{2} = [{'Non Fourier Et(t)'           }
                     {'E_t FFT Plot'                 }
                     {'E_t Final Applied Dispersion' }
@@ -64,6 +65,7 @@ set(handles.UIN,                 'String', N)
 set(handles.UIBandPassFilter,    'String', BPF);
 set(handles.UIDelt1,             'String', Delt1)
 set(handles.UIDelt2,             'String', Delt2)
+set(handles.UIORD,               'String', ORD)
 set(handles.UISimulationSelector,'Value',SimIndex);                 %Sets the value of the Simulation selector to 1
 set(handles.UISimulationSelector,'String',SimulationSelect);                 %Sets the handles for all Simulation items in dropdow
 set(handles.UIPlotSelect,        'Value',PlotIndex);                         %Sets the value of the Plot selector to the correct index
