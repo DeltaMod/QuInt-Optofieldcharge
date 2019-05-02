@@ -162,7 +162,7 @@ Et = fun_Et(A_t,t,t_0,T_x,w_0x,theta);
 Ew = fun_Ew(A_w,w,W_x,w_0x,phiw);
 %Note: These are related to each other by: \delta w*\delta t =4ln(2), that is W*T = 4*log(2) which means we get: W  = 4*log(2)/T;
 %T = (Ncycx*2*pi())/w_0x => W = 4*log(2)*w_0x/(Ncycx*2*pi()) 
-PROGBAR = waitbar(0.1,'Calculating E_t(t)'); %pause(0.2);
+PROGBAR = waitbar(0.1,'Calculating $E_t(t)$'); %pause(0.2);
 
 
 %% if PlotSelect == "Non Fourier Et(t)"
@@ -175,7 +175,7 @@ PROGBAR = waitbar(0.1,'Calculating E_t(t)'); %pause(0.2);
 %%-- Time to test conversions between the two --%%
 %% -- E_t -> FFT = E_w -> Band Filter + IFFT = E_t -- %% 
 
-waitbar(0.2,PROGBAR,'Calculating fft(E_t)');%pause(0.2);
+waitbar(0.2,PROGBAR,'Calculating fft($E_t$)');%pause(0.2);
 
 Estr = FFTD(t,Et,w_0x,'ttt',SiO2.phi,0); %This generates:  | Estr.ttt.Et & Estr.ttt.t | Estr.ttt.Ew & Estr.ttf.w | Estr.ttt.Etdisp & Estr.ttt.tdisp|
 
@@ -201,7 +201,7 @@ end
 %end
 %%
 
-waitbar(0.3,PROGBAR,'Calculating Dispersed E_t(t)');
+waitbar(0.3,PROGBAR,'Calculating Dispersed $E_t(t)$');
 
 %% if PlotSelect == "E_t Final Applied Dispersion"
 %plot(Estr.ttt.tdisp,real(Estr.ttt.Etdisp));grid on; fprintf(['\n','Plotting [',PlotSelect{1},']']);
@@ -266,7 +266,7 @@ Eftt  = FFTD(w,Ew,w_0x,'ftt',SiO2.phi,0);
  
 
 %% Alternate Code
-waitbar(0.45,PROGBAR,'Calculating E_w(t)');
+waitbar(0.45,PROGBAR,'Calculating $E_w(t)$');
 Estw = FFTD(w,Ew,w_0x,'ftt',SiO2.phi,0);
 %% if PlotSelect ==  "E_w IFFT Dispersion"
 %plot(Estw.ftt.tdisp,real(Estw.ftt.Etdisp)); grid on; fprintf(['\n','Plotting [',PlotSelect{1},']']);
@@ -308,12 +308,12 @@ Deltn  = linspace(Delt1,Delt2,N_Delt);
 E_td = FFTD(t,fun_Et(A_t,t,t_0,T_x,w_0x,0),w_0x,'ttt',SiO2.phi,0);
 E_ti = FFTD(t,fun_Et(A_t,t,t_0,T_y,w_0y,0),w_0y,'ttt',SiO2.phi,0);
 Delt = linspace(Delt1*dt,Delt2*dt,N_Delt);
-waitbar(0.5+0.5*0/N,PROGBAR,['Integrating to determine <a^2n+1>','   n/N_Delt = ',num2str(0),'/',num2str(N_Delt)]);
+waitbar(0.5+0.5*0/N,PROGBAR,['Integrating to determine $\left<a^2n+1\right>$','   n/N$\_$Delt = ',num2str(0),'/',num2str(N_Delt)]);
 
 
 for n = 1:N_Delt
 if rem(n,round(N_Delt/100,-1)) == 0
-waitbar(0.5+0.5*n/N_Delt,PROGBAR,['Integrating to determine <a^2n+1>','   n/N_Delt = ',num2str(n),'/',num2str(N_Delt)]);
+waitbar(0.5+0.5*n/N_Delt,PROGBAR,['Integrating to determine $\left<a^2n+1\right>$','   n/N$\_$Delt = ',num2str(n),'/',num2str(N_Delt)]);
 %if N/n = A*N/100 1000/200
 end
 E_td.ttt.Etdshift = circshift(E_td.ttt.Etdisp,Deltn(n)); E_td.ttt.tdshift = circshift(E_td.ttt.tdisp,Deltn(n)); 

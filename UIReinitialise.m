@@ -1,5 +1,7 @@
 %% This script is used to re-initialise the UI, in case you need to reset or initialise - Run at start/reset
 addpath(genpath(fileparts(which('Variables.m'))))
+set(0, 'defaultAxesTickLabelInterpreter','latex'); set(0, 'defaultLegendInterpreter','latex'); set(0, 'defaultTextInterpreter','latex');
+set(0,'defaultAxesFontName', 'CMU Serif'); set(0,'defaultTextFontName', 'CMU Serif');
 
 if exist('LOADPRESET','var') == 0
 DATAIMPORT = readtable('SessionRestore.dat','Delimiter',';');
