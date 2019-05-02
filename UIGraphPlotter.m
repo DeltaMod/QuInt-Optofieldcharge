@@ -23,15 +23,12 @@ if SimSelect == "Simple Photoinduced Charge"
 if exist('UIRUN','var') == 0; PlotSelect = "Gaussian Laser Pulse"; FIG = figure(1);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,1); end
 if PlotSelect == "Gaussian Laser Pulse"
 cla reset
-plot((t-t_0)/T_x,a)
-hold on
 plot((t-t_0)/T_x,a2n(:,1:N),'LineWidth',1.3)
 ylim([-1 1])
 set(gca, 'XLimSpec', 'Tight');
 xlabel('Optical Cycle ((t-t_0)/T)')
 ylabel('Vector Potential (and a^2n+1)')
 legend(atLEG,'Location','northeast','FontSize',16)
- 
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "<a^2n+1>"; FIG = figure(2);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,3); end
@@ -41,7 +38,7 @@ semilogy(Ncyc2,Vpota(:,:))
 hold on
 %axis([1 2.5 10^-6 10^0])
 
-legend(avecFN,'Location','best' )
+legend(avecLEG,'Location','best' )
 xlabel('Number of Optical Cycles (t/T)')
 ylabel('Vector Potential momenta')
 end
@@ -268,12 +265,14 @@ if  strcmp('auto',get(gca,'XLimMode')) && strcmp('auto',get(gca,'YLimMode')) == 
     disp('setting axis to tight')
 end
 grid on
-set(gca,'fontsize', 12)
+set(gca,'TickLabelInterpreter', 'latex')
+set(gca,'fontsize', 15)
 set(gca, 'FontName', 'Computer Modern')
 set(gca,'Box','on')
 
 if exist('POPOUT') == 1
-InSet = [0.076    0.115    0.076       0.04]; %Fontsize 12
+LEFT = 0.09; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 %InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
@@ -292,7 +291,7 @@ legend('N_c_y_c = 1.0','N_c_y_c = 1.5','N_c_y_c = 2.0','N_c_y_c = 2.5','N_c_y_c 
 grid on
 set(gca,'YScale','log')
 set(gca,'fontsize', 12)
-set(gca, 'FontName', 'Computer Modern')
+set(gca, 'FontName', 'Arial')
 set(gca,'Box','on')
 InSet = [0.076    0.115    0.14       0.02];
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
@@ -312,7 +311,7 @@ axis([ETI.ttt.tdisp(1) ETI.ttt.tdisp(end) -3 3])
 %xlabel('\Delta t [s]')
 TGPH.Position = [550 270 360 620]
 grid on
-set(gca,'fontsize', 12)
+set(gca,'fontsize', 16)
 set(gca, 'FontName', 'Computer Modern')
 set(gca,'Box','on')
 InSet = [0.17    0.115    0.03       0.06]; %Fontsize 12

@@ -128,7 +128,7 @@ end
 end
 
 a2n(1,:) = a;
-for n = 1:4
+for n = 1:ORD
 a2n(n+1,:) = a_fun2n1(t,t_0,T_x,n,w_0x);
 end
 
