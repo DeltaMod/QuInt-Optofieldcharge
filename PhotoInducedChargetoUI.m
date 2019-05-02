@@ -71,7 +71,7 @@ a = a_fun(t,t_0,T_x,w_0x);
 %The study states: <a^(2n+1)> = w_0x*int^{t_max}_{t_min} = a^(2n+1)(t)dt
 
 
-PROGBAR = waitbar(0.3,'Calculating <a^2n+1>'); pause(0.2);
+PROGBAR = waitbar(0.3,'Calculating $\left<a^2n+1\right>$'); pause(0.2);
 %We define a new function handle a_fun2n1 to help us integrate it over time with the new ^2n+1
 a_fun2n1 = @(t,t_0,T,n,w_0x) (exp(-2*log(2).*(t-t_0).^2/T.^2).*cos(w_0x*(t-t_0))).^(2*n+1);
 
@@ -84,7 +84,7 @@ end
 %% -- Verifying <a^2n+1> by plotting against Ncyc for all values of n = 1,2,3,4,5 -- %%
 Ncyc2 = linspace(1,3.5,2*length(t));
 T2 = (Ncyc2*2*pi())./w_0x;
-waitbar(0.6,PROGBAR,['Calculating <a^2n+1> for Ncyc \in [', num2str(Ncyc2(1)),',',num2str(Ncyc2(end)),']']); pause(0.2);
+waitbar(0.6,PROGBAR,['Calculating $<a^2n+1>$ for $N_{cyc} \in [', num2str(Ncyc2(1)),',',num2str(Ncyc2(end)),']$']); pause(0.2);
 for n = 1:ORD
     for Nc = 1:length(T2)  
         ta2 = linspace(0,20*T2(Nc),1000); %time axis 2, because t2 interfers with the UI code

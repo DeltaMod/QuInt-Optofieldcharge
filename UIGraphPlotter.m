@@ -4,17 +4,13 @@ FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 920 540]; FI
 end
 
 %Generate Legend Names
-finstr = [];
+
 for n = 1:length(avecFN)
 tempstr = num2str(2*n+1);
-for i = 1:length(tempstr)
-    tempstr = ['^',tempstr(i)]; finstr = [finstr,tempstr];
+avecLEG{n} = ['$\left<a^{',tempstr,'}\right>$']; 
+atLEG{n+1} = ['$a(t)^{',tempstr,'}$'];
 end
-avecLEG{n} = ['<a',finstr,'>']; 
-atLEG{n+1} = ['a(t)',finstr];
-finstr = [];
-end
-atLEG{1} = 'a(t)';
+atLEG{1} = '$a(t)$';
 clear tempstr1; clear tempstr2; clear tempstr3; clear tempstr4; clear finstr; clear finstr1; clear finstr2;
 
 %% PhotoinducedChargetoUI %%
@@ -26,8 +22,8 @@ cla reset
 plot((t-t_0)/T_x,a2n(:,1:N),'LineWidth',1.3)
 ylim([-1 1])
 set(gca, 'XLimSpec', 'Tight');
-xlabel('Optical Cycle ((t-t_0)/T)')
-ylabel('Vector Potential (and a^2n+1)')
+xlabel('Optical Cycle ($\frac{t-t_0}{T}$)')
+ylabel('Vector Potential (and $a^{2n+1}$)')
 legend(atLEG,'Location','northeast','FontSize',16)
 end
 
@@ -39,7 +35,7 @@ hold on
 %axis([1 2.5 10^-6 10^0])
 
 legend(avecLEG,'Location','best' )
-xlabel('Number of Optical Cycles (t/T)')
+xlabel('Number of Optical Cycles $\left(\frac{t-t_0}{T}\right)$')
 ylabel('Vector Potential momenta')
 end
 
@@ -72,8 +68,8 @@ ylim([10^-20 AQMax])
 clear AQMax;
 LEG = legend({avecLEG{:},'etc'},'Location','Best');
 title(LEG,'Greatest Term Contribution')
-xlabel('Field Strength [Vm^-^1]')
-ylabel('Contribution to Q by <a^2n+1> term [C]')
+xlabel('Field Strength [Vm$^{-1}$]')
+ylabel('Contribution to Q by $\left<a^{2n+1}\right>$ term [C]')
 
 end
 
@@ -84,7 +80,7 @@ if PlotSelect == "Photoinduced Charge"
     cla reset
 plot(F_0,Q/(10^-15));
 
-xlabel('Optical Field [Vm^-^1]')
+xlabel('Optical Field [Vm$^{-1}$]')
 ylabel('Photoinduced Charge [fC]')
 end
 end
@@ -97,7 +93,7 @@ if exist('UIRUN','var') == 0; PlotSelect = "Non Fourier Et(t)"; FIG = figure(1);
 if PlotSelect == "Non Fourier Et(t)"
 cla reset;
 %subplot(1,2,1)
-plot(t-t_0,real(Et)); xlabel('time [s]'); ylabel('E_t(t)'); fprintf(['\n','Plotting [',PlotSelect{1},']']);
+plot(t-t_0,real(Et)); xlabel('time [s]'); ylabel('$E_t(t)$'); fprintf(['\n','Plotting [',PlotSelect{1},']']);
 
 
 end
@@ -106,7 +102,7 @@ if exist('UIRUN','var') == 0; PlotSelect = "E_t FFT Plot"; FIG = figure(2);clf; 
 if PlotSelect == "E_t FFT Plot"
 cla reset;
 plot(Estr.ttt.w,abs(Estr.ttt.Ew)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('\omega [rad/s]')
+xlabel('$\omega$ [rad/s]')
 ylabel('Amplitude')
 hold on
 plot([w_0x,w_0x],[0,abs(max(Estr.ttt.Ew))])
@@ -117,7 +113,7 @@ if PlotSelect == "E_t Final Applied Dispersion"
 cla reset;
 plot(linspace(t1,t2,length(Estr.ttt.tdisp))-t_0,real(Estr.ttt.Etdisp)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
 xlabel('s[fs]')
-ylabel('amplitude')
+ylabel('Amplitude')
 
 end
 
@@ -127,9 +123,9 @@ cla reset
 plot(Estr.ttt.tdisp,Etf2n(:,:),'LineWidth',1.3)
 hold on
 ylim([-1 1])
-xlabel('Optical Cycle ((t-t_0)/T)')
-ylabel('Vector Potential (and a^2n+1)')
-legend('E_t(t)','E_t(t)^3','E_t(t)^5','E_t(t)^7','E_t(t)^9','Location','best' )
+xlabel('Optical Cycle $\left(\frac{t-t_0}{T}\right)$')
+ylabel('Vector Potential (and $a^{2n+1}$)')
+legend('$E_t(t)$','$E_t(t)^3$','$E_t(t)^5$','$E_t(t)^7$','$E_t(t)^9$','Location','best' )
  
 end
 
@@ -138,7 +134,7 @@ if PlotSelect == "Post Dispersion Photoinduced Charge"
     cla reset
     plot(F_0,(Q)/10^-15);
 
-xlabel('Optical Field [Vm^-^1]')
+xlabel('Optical Field [Vm$^{-1}$]')
 ylabel('Photinduced Charge [fC]')
 
 if exist('THESISGRAPH') == 1
@@ -163,7 +159,7 @@ figure(1)
 plot(F_0,(Qpc)/10^-15);
 legend(LLeg)
 
-xlabel('Field Strength (Vm^-^1)')
+xlabel('Field Strength [Vm$^{-1}$]')
 ylabel('Photoinduced Charge [fC]')
 
 figure(2)
@@ -182,7 +178,7 @@ if exist('UIRUN','var') == 0; PlotSelect = "E_w IFFT Dispersion"; FIG = figure(6
 if PlotSelect ==  "E_w IFFT Dispersion"
 cla reset;
 plot(Estw.ftt.tdisp,real(Estw.ftt.Etdisp)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
-legend(['\phi_2 = ' num2str(SiO2.phi(3),'%.4g')])
+legend(['$\phi_2$ = ' num2str(SiO2.phi(3),'%.4g')])
 xlabel('Time [s]')
 ylabel('Amplitude')
 end
@@ -213,7 +209,7 @@ plt6 = plot(Delt./(N_Delt/N),QPol/max(QPol)+1,'k');
 plt7 = plot(Delt(SldInd)./(N_Delt/N),QPoldt/max(QPol)+1,'k*'); 
 %plot(ETI.ttt.tdisp,real(Ediresdt),'b:','LineWidth',1.3);
 fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('\Delta t [s]')
+xlabel('$\Delta t$ [s]')
 ylabel('Sum of Vector Potential')
 axis([ETI.ttt.tdisp(1) ETI.ttt.tdisp(end) -3 3])
 hold off
@@ -224,8 +220,8 @@ if exist('UIRUN','var') == 0; PlotSelect = "Temporal Overlap Induced Charge"; FI
 if PlotSelect == "Temporal Overlap Induced Charge"
 cla reset;
 plot(Delt,real(QHarm));fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('\Delta t [s]')
-ylabel('Q(\Delta t [C])')
+xlabel('$\Delta t$ [s]')
+ylabel('$Q(\Delta t$ [C])')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
 
 
@@ -242,7 +238,7 @@ plot(E_ti.ttt.tdisp,real(E_ti.ttt.Etdisp),'--b')
 ylim([-2 2])
 plot(E_td.ttt.tdisp,real(Edires(1,:)),':k','LineWidth',1.2)
 fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('\Delta t [s]')
+xlabel('$\Delta t$ [s]')
 ylabel('Vector Potential Momenta')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
 %figure(1)
@@ -253,8 +249,8 @@ if exist('UIRUN','var') == 0; PlotSelect = "Dual Polarised Induced Charge"; FIG 
 if PlotSelect == "Dual Polarised Induced Charge"
 cla reset;
 plot(Delt,real(QPol));fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('\Delta t [s]')
-ylabel('Q(\Delta t) [C]')
+xlabel('$\Delta t$ [s]')
+ylabel('$Q(\Delta t)$ [C]')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
 
 end
@@ -265,18 +261,21 @@ if  strcmp('auto',get(gca,'XLimMode')) && strcmp('auto',get(gca,'YLimMode')) == 
     disp('setting axis to tight')
 end
 grid on
-set(gca,'TickLabelInterpreter', 'latex')
 set(gca,'fontsize', 15)
-set(gca, 'FontName', 'Computer Modern')
 set(gca,'Box','on')
 
 if exist('POPOUT') == 1
-LEFT = 0.09; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
 InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 %InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
-
+if exist('POPOUT') == 0
+LEFT = 0.06; BOTTOM = 0.13; RIGHT = 0.35; TOP = 0.05;    
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
+%InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
+end
 %THESISGRAPH = 1
 if exist('THESISGRAPH') == 1
 TGPH = figure(3)
@@ -286,8 +285,8 @@ plot([0,2.5*10^10],[1.60217662*10^-4, 1.60217662*10^-4],'r--')
 xlabel('Field Strength [Vm^-^1]')
 ylabel('Photoinduced Charge [fC]')    
 TGPH.Position = [550 270 920 540]
-legend('N_c_y_c = 1.0','N_c_y_c = 1.5','N_c_y_c = 2.0','N_c_y_c = 2.5','N_c_y_c = 3.0',...
-       'N_c_y_c = 3.5','N_c_y_c = 4.0','N_c_y_c = 4.5','N_c_y_c = 5.0','N_c_y_c = 5.5','N_c_y_c = 6.0','e')
+legend('$N_{cyc}$ = 1.0','$N_{cyc}$ = 1.5','$N_{cyc}$ = 2.0','$N_{cyc}$ = 2.5','$N_{cyc}$ = 3.0',...
+       '$N_{cyc}$ = 3.5','$N_{cyc}$ = 4.0','$N_{cyc}$ = 4.5','$N_{cyc}$ = 5.0','$N_{cyc}$ = 5.5','$N_{cyc}$ = 6.0','e')
 grid on
 set(gca,'YScale','log')
 set(gca,'fontsize', 12)
@@ -304,7 +303,7 @@ plt3 = plot(ETI.ttt.tdisp,real(ETI.ttt.Etdisp),'g','LineWidth',1); %No Overlap -
 %plt4 = plot(Delt./(N_Delt/N),QHarm/max(QHarm)+1,'m'); %Overlap
 %plot(ETI.ttt.tdisp,real(Ediresdt),'b','LineWidth',1.3);
 
-xlabel('\Delta t [s]')
+xlabel('$\Delta t$ [s]')
 ylabel('Sum of Vector Potential')
 axis([ETI.ttt.tdisp(1) ETI.ttt.tdisp(end) -3 3])
 
