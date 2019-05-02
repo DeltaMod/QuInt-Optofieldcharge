@@ -6,15 +6,15 @@ end
 %Generate Legend Names
 finstr = [];
 for n = 1:length(avecFN)
-tempstr = num2str(2*n+1);
-for i = 1:length(tempstr)
-    tempstr = ['^',tempstr(i)]; finstr = [finstr,tempstr];
+tempstr1 = ['a',num2str(2*n+1)];
+tempstr3 = ['a(t)',num2str(2*(n)+1)]
+for i = 2:length(tempstr1)
+    tempstr2 = ['^',tempstr1(i)]; finstr1 = [finstr,tempstr2];
+    tempstr4 = ['^',tempstr3(i+3)]; finstr2 = [finstr,tempstr4];
 end
-avecLEG{n} = ['<a',finstr,'>']; 
-atLEG{n+1} = ['a(t)',finstr];
-finstr = [];
+avecLEG{n} = ['<a',finstr1,'>'] 
+atLEG{n+1} = ['afinstr2
 end
-atLEG{1} = 'a(t)';
 clear tempstr1; clear tempstr2; clear tempstr3; clear tempstr4; clear finstr; clear finstr1; clear finstr2;
 
 %% PhotoinducedChargetoUI %%
@@ -30,7 +30,7 @@ ylim([-1 1])
 set(gca, 'XLimSpec', 'Tight');
 xlabel('Optical Cycle ((t-t_0)/T)')
 ylabel('Vector Potential (and a^2n+1)')
-legend(atLEG,'Location','northeast','FontSize',16)
+legend(avecLEG,'Location','northeast','FontSize',16)
  
 end
 
