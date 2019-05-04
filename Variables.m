@@ -40,8 +40,8 @@ clear WavLen
 %Graph of equation for the relevant range above - we don't really need this though
 nind = n_ref; lambrange = linspace(0.21,6.7,1000); % \mu m
 
-%n_ref= fun_n(lambda_0);                                                                  %units none
-GD    = 1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1)) * 1000;                                 %units s/mm
+%n_ref= fun_n(lambda_0);                                                                   %units none
+GD    = (1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1))) / 1000;                                %units s/mm
 GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000;                                          %units s^2/mm
 TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000;   %units s^3/mm
 

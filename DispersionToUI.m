@@ -141,7 +141,7 @@ k(1) = w_0x/SiO2.GD;
 k(2) = c/SiO2.GD;
 %online sources state that k' = 1/vg where vg = c/n_g
 
-SiO2.phi = [pi() SiO2.GD SiO2.GVD SiO2.TOD 1]; 
+SiO2.phi = [0 SiO2.GD SiO2.GVD SiO2.TOD 1]; 
 
 fun_phiw = @(phi_0, phi_1, phi_2, phi_3,w,w_0x) phi_0                 +...    %phi_0 is Carrier Envelope Phase - Values of pi() 
                                                phi_1.*((w-w_0x))      +...    %phi_1 is the Group Delay 
