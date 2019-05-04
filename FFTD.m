@@ -48,7 +48,6 @@ if issorted(real(y)) == 1
 else
 if mean(strcmp(type,{'ttt';'ttf';'ftt'})) > 0
 A.N    = length(x); %N length vector
-
 A.t    = x; %Time Axis
 A.t1   = A.t(1); A.t2 = A.t(end);
 A.t_0  = mean(A.t);               % Centre Time Axis
@@ -74,6 +73,10 @@ fun_phiw = @(phi0, phi1, phi2, phi3,w,w_0) phi0                       +...  %phi
 A.phi = Phi; 
 A.phiw = fun_phiw(A.phi(1), A.phi(2), A.phi(3), A.phi(4),A.w,A.w_0);
 A.theta = fun_theta(Theta);
+
+%% Calculate post dispersion delay, and how many units to shift the pulse by to center it %
+A.tD    = A.phi(2); % The added time delay by phi_2
+A.tcirc = round(A.N*(round(A.phi(2)/A.Dt)-A.phi(2)/A.Dt)); 
 end
 switch type
 
@@ -82,10 +85,8 @@ switch type
     A.ttt.Et = y;
     A.Et = y/max(y);
     E.ttf.t
-    
-    A.nfft = 2^nextpow2(length(A.Et));  % Determining required length (nfft) of frequency axis: Padding by 2^P, where 2^(P-1)<length(Ew) and 2^P>lenght(Ew) (if length(Ew=1000), then P = 10 for instance since 2^10 = 1024>1000
-    A.Etfft=fft(A.Et,A.nfft); A.Etfft= flip(A.Etfft);
-    A.wfft =linspace(A.w_t1,A.w_t2,A.nfft); % Defining the frequency axis  
+    A.Etfft=fft(A.Et); %A.Etfft= flip(A.Etfft);
+    A.wfft =linspace(A.w_t2,A.w_t1,length(y)); % Defining the frequency axis - it's "backwards" because the fft goes high to low freq
     A.ttf.w = A.wfft;
     A.Etfft = A.Etfft.*exp(-1i.*fun_phiw(A.phi(1),A.phi(2),A.phi(3),A.phi(4),A.wfft,A.w_0));
     A.ttf.Ew = A.Etfft;
@@ -101,18 +102,21 @@ switch type
     A.Et = y/max(y);
     A.ttt.t = x;
     
-    A.nfft = 2^nextpow2(length(A.Et));  % Determining required length (nfft) of frequency axis: Padding by 2^P, where 2^(P-1)<length(Ew) and 2^P>lenght(Ew) (if length(Ew=1000), then P = 10 for instance since 2^10 = 1024>1000
-    A.Etfft=fft(A.Et,A.nfft); A.Etfft= flip(A.Etfft);
-    A.wfft =linspace(A.w_t1,A.w_t2,A.nfft); % Defining the frequency axis  
+    A.Etfft=fft(A.Et); %A.Etfft= flip(A.Etfft);
+    A.wfft =linspace(A.w_t2,A.w_t1,length(y)); % Defining the frequency axis - it's "backwards" because the fft goes high to low freq
     A.ttt.w = A.wfft;
     A.Etfft = A.Etfft.*exp(-1i.*fun_phiw(A.phi(1),A.phi(2),A.phi(3),A.phi(4),A.wfft,A.w_0));
     A.ttt.Ew = A.Etfft;
     
     %E_w -> E_t
-    A.Etifft =(ifft(A.Etfft,A.nfft-1));
-    A.t_ifft = linspace(A.t(1),A.t(end),length(A.Etifft))-A.t_0; %Define time axis for re-transform
+    A.Etifft =flip((ifft(A.Etfft))); %We flip it here, because otherwise it is backwards when transformed back
+    Dt = 2*pi()/A.wfft(end); dt_w = 2*pi()/A.wfft(1);   
+    t1 = -A.t_0; t2 = Dt-A.t_0;
+    A.t_ifft = linspace(t1,t2,length(A.Et));
     A.ttt.Etdisp = A.Etifft;
     A.ttt.tdisp  = A.t_ifft;
+    A.ttt.Etdispc = circshift(A.Etifft,A.tcirc);
+    A.ttt.tdispc  = A.ttt.tdisp + A.tD;
     
     A.ttt.PHITEXT = sprintf(['\\phi_0 = ', num2str(A.phi(1),'%.4g'),'\n',...
                              '\\phi_1 = ', num2str(A.phi(2),'%.4g'),'\n',...
@@ -123,12 +127,9 @@ switch type
     %E_w -> E_t
     A.ftt.w  = x;
     A.ftt.Ew = y/max(y);
-    
     A.Ew     = y/max(y); %Note: The current Ew equation includes the phi component, so you must change that to apply a different dispersion.
     
-    
-    A.nfft       = 2^nextpow2(length(y));         % Determining required length (nfft) of frequency axis: Padding by 2^P, where 2^(P-1)<length(Ew) and 2^P>lenght(Ew) (if length(Ew=1000), then P = 10 for instance since 2^10 = 1024>1000
-    A.Ewfft      = fftshift(ifft(A.Ew,A.nfft));   % Performing the fourier transform using nfft as the N=nfft number of points 
+    A.Ewfft      = fftshift(ifft(A.Ew));   % Performing the fourier transform using nfft as the N=nfft number of points 
     A.ftt.Etdisp = A.Ewfft;
     A.ftt.tdisp  = linspace(A.t_w1,A.t_w2,length(A.ftt.Etdisp)); 
    

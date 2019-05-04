@@ -1,6 +1,6 @@
 %% This UI Document is used to plot the graphs, and nothing else! %%
 if exist('POPOUT','var') == 1 %Old Pos [525 270 870 540] %Use for simple photo [450 270 720 540]
-FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 920 540]; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
+FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 920 520]; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
 end
 
 %Generate Legend Names
@@ -45,15 +45,17 @@ if PlotSelect == "<a^2n+1> Term Contributions to Charge"
     cla reset
 
 for n = 1:length(avecFN)
+area(F_0(ADOMN.(avecFN{n})),ATermsQ.(avecFN{n})(ADOMN.(avecFN{n})),'FaceAlpha',0.3,'LineStyle','None')
+hold on
+end
+set(gca,'ColorOrderIndex',1)
+for n = 1:length(avecFN)
 semilogy(F_0,ATermsQ.(avecFN{n}),'HandleVisibility','off')
 hold on
 end
 
-set(gca,'ColorOrderIndex',1)
-for n = 1:length(avecFN)
-area(F_0(ADOMN.(avecFN{n})),ATermsQ.(avecFN{n})(ADOMN.(avecFN{n})),'FaceAlpha',0.3,'LineStyle','None')
-hold on
-end
+
+
 
 for n = length(avecFN):-1:1
     if length(ADOMN.(avecFN{n})) > 2
@@ -66,8 +68,8 @@ set(gca,'YScale','log')
 xlim([0 max(F_0)])
 ylim([10^-20 AQMax])
 clear AQMax;
-LEG = legend({avecLEG{:},'etc'},'Location','Best');
-title(LEG,'Greatest Term Contribution')
+LEG = legend({avecLEG{1:end-round(ORD-ORD/7)},'etc'},'Location','Best');
+title(LEG,sprintf('Greatest Term\n Contribution'))
 xlabel('Field Strength [Vm$^{-1}$]')
 ylabel('Contribution to Q by $\left<a^{2n+1}\right>$ term [C]')
 
@@ -111,8 +113,10 @@ end
 if exist('UIRUN','var') == 0; PlotSelect = "E_t Final Applied Dispersion"; FIG = figure(3);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,2); end 
 if PlotSelect == "E_t Final Applied Dispersion"
 cla reset;
-plot(linspace(t1,t2,length(Estr.ttt.tdisp))-t_0,real(Estr.ttt.Etdisp)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('s[fs]')
+plot(Estr.ttt.tdisp/10^-15,real(Estr.ttt.Etdispc)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
+xlabel('Time [fs]')
+LEG = legend(['$\phi_2$ = ',num2str(Estr.tD), ' [fs]']);
+title(LEG,'Pulse Delay')
 ylabel('Amplitude')
 
 end
@@ -137,39 +141,52 @@ if PlotSelect == "Post Dispersion Photoinduced Charge"
 xlabel('Optical Field [Vm$^{-1}$]')
 ylabel('Photinduced Charge [fC]')
 
+%THESISGRAPH = 1; Warning: This seems to be really buggy, don't expect it
+%to work outright when you try -Code is sloppy!
 if exist('THESISGRAPH') == 1
-    if exist('PLOTDONE') == 0
+    NREP = 20
     if exist('TGRPH') == 0
         TGRPH = 1;
         clear Qpc
         clear Lrng
     end
-    while TGRPH < 10
-LLeg{TGRPH} = ['L = ',num2str(L),'+',num2str(TGRPH*2e-11),' mm'];
+while TGRPH < NREP
+LLeg{TGRPH} = ['L = ',num2str(L*10^3),' $\mu m$'];
 Lrng(TGRPH) = L;
-L = L+2e-11;
+L = L+5e-5;
 Qpc(TGRPH,:) = Q;
 TGRPH = TGRPH + 1;
+if TGRPH < NREP
 run Variables
 run DispersionToUI
-    end
-
-
-figure(1)
+end
+if TGRPH == NREP
+ff =  figure(1);
 plot(F_0,(Qpc)/10^-15);
 legend(LLeg)
-
 xlabel('Field Strength [Vm$^{-1}$]')
 ylabel('Photoinduced Charge [fC]')
+ff.Position = [550 270 920 520];
+grid on
+set(gca,'fontsize', 15)
+set(gca,'Box','on')
+LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
+%InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 
 figure(2)
-plot(Lrng,Qpc(:,end))
-xlabel('L [mm]')
+plot(Lrng*10^3,Qpc(:,end)/10^-15)
+xlabel('L [$\mu m$]')
 ylabel('Photoinduced Charge [fC]')
-
+grid on
+set(gca,'fontsize', 15)
+set(gca,'Box','on')
+axis tight
 clear TGRPH
-    end
-    PLOTDONE = 1;
+
+end
+end
 end
 
 end
@@ -276,13 +293,14 @@ InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 %InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
-%THESISGRAPH = 1
-if exist('THESISGRAPH') == 1
+
+%THESISGRAPH2 = 1
+if exist('THESISGRAPH2') == 1
 TGPH = figure(3)
 hold on
 plot(F_0,abs(Q)/10^-15)
 plot([0,2.5*10^10],[1.60217662*10^-4, 1.60217662*10^-4],'r--')    
-xlabel('Field Strength [Vm^-^1]')
+xlabel('Field Strength [$Vm^{-1}$]')
 ylabel('Photoinduced Charge [fC]')    
 TGPH.Position = [550 270 920 540]
 legend('$N_{cyc}$ = 1.0','$N_{cyc}$ = 1.5','$N_{cyc}$ = 2.0','$N_{cyc}$ = 2.5','$N_{cyc}$ = 3.0',...
