@@ -141,7 +141,7 @@ end
 %end
 waitbar(1,PROGBAR,['DONE!']); pause(0.5);
 delete(PROGBAR)
-run UIGraphPlotter
+evalin('base','UIGraphPlotter')
 
 EXTRAQ = 0;
 if EXTRAQ == 1
