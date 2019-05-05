@@ -330,7 +330,7 @@ end
 
 
 QHarm(n) = fun_Q(F_0(end),F_a,a2harm(n,:),Aeff,ORD);
-QPol(n)  = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,F_a,a2pol(n,:),Aeff,ORD);
+QPol(n)  = fun_QDelt(F_0x,F_0y,F_a,a2pol(n,:),Aeff,ORD);
  
 %% In case you want animation of the transformation here :)
 
@@ -373,7 +373,7 @@ end
 
 waitbar(1,PROGBAR,'DONE!'); %pause(0.5);
 delete(PROGBAR)
-run UIGraphPlotter
+evalin('base','UIGraphPlotter')
 
 THESISGRAPHS = 0;
 if THESISGRAPHS == 1 %This is for when you wish to reproduce graphs for your paper, keep these constant so you don't need to type them in again

@@ -1,6 +1,6 @@
 %% This UI Document is used to plot the graphs, and nothing else! %%
-if exist('POPOUT','var') == 1 %Old Pos [525 270 870 540] %Use for simple photo [450 270 720 540]
-FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 920 520]; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
+if exist('POPOUT','var') == 1 %Old Pos [525 270 870 540] %Use for simple photo [450 270 720 540] Orig: [550 270 920 520] 
+FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 560 520] ; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
 end
 
 %Generate Legend Names
@@ -141,29 +141,30 @@ if PlotSelect == "Post Dispersion Photoinduced Charge"
 xlabel('Optical Field [Vm$^{-1}$]')
 ylabel('Photinduced Charge [fC]')
 
-%THESISGRAPH = 1; Warning: This seems to be really buggy, don't expect it
+%THESISGRAPH = 1; % Warning: This seems to be really buggy, don't expect it
 %to work outright when you try -Code is sloppy!
 if exist('THESISGRAPH') == 1
-    NREP = 20
+    NREP = 15;
     if exist('TGRPH') == 0
-        TGRPH = 1;
-        clear Qpc
-        clear Lrng
+        TGRPH  = 1;
     end
 while TGRPH < NREP
 LLeg{TGRPH} = ['L = ',num2str(L*10^3),' $\mu m$'];
 Lrng(TGRPH) = L;
-L = L+5e-5;
+L = Lrng(1)+(TGRPH-1)*2e-5;
 Qpc(TGRPH,:) = Q;
-TGRPH = TGRPH + 1;
-if TGRPH < NREP
-run Variables
-run DispersionToUI
+TGRPH  = 1+TGRPH;
+if TGRPH<NREP+1
+run Variables.m
+run DispersionToUI.m
+end  
+
 end
-if TGRPH == NREP
+
+if exist('PLOTDONE') == 0
 ff =  figure(1);
 plot(F_0,(Qpc)/10^-15);
-legend(LLeg)
+ffl = legend(LLeg); ffl.NumColumns = 2;
 xlabel('Field Strength [Vm$^{-1}$]')
 ylabel('Photoinduced Charge [fC]')
 ff.Position = [550 270 920 520];
@@ -183,12 +184,13 @@ grid on
 set(gca,'fontsize', 15)
 set(gca,'Box','on')
 axis tight
-clear TGRPH
-
+LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
+%InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
+PLOTDONE = 1;
 end
-end
-
 end
 
 if exist('UIRUN','var') == 0; PlotSelect = "E_w IFFT Dispersion"; FIG = figure(6);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(1,1); end 
@@ -236,8 +238,8 @@ end
 if exist('UIRUN','var') == 0; PlotSelect = "Temporal Overlap Induced Charge"; FIG = figure(8);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,2); end
 if PlotSelect == "Temporal Overlap Induced Charge"
 cla reset;
-plot(Delt,real(QHarm));fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('$\Delta t$ [s]')
+plot(Delt/10^-15,real(QHarm));fprintf(['\n','Plotting [',PlotSelect{1},']']);
+xlabel('$\Delta t$ [fs]')
 ylabel('$Q(\Delta t$ [C])')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
 
@@ -265,9 +267,9 @@ end
 if exist('UIRUN','var') == 0; PlotSelect = "Dual Polarised Induced Charge"; FIG = figure(10);clf; FIG.Name = PlotSelect{1}; FIG.Position = FigPos(3,2); end
 if PlotSelect == "Dual Polarised Induced Charge"
 cla reset;
-plot(Delt,real(QPol));fprintf(['\n','Plotting [',PlotSelect{1},']']);
-xlabel('$\Delta t$ [s]')
-ylabel('$Q(\Delta t)$ [C]')
+plot(Delt/10^-15,real(QPol)/10^-15);fprintf(['\n','Plotting [',PlotSelect{1},']']);
+xlabel('$\Delta t$ [fs]')
+ylabel('$Q(\Delta t)$ [fC]')
 %legend(['T_E_i =' num2str((0.5*n-10)*T+T,'%.4g') ')'])
 
 end
@@ -282,7 +284,8 @@ set(gca,'fontsize', 15)
 set(gca,'Box','on')
 
 if exist('POPOUT') == 1
-LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+%Orig: LEFT = 0.06; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;
+LEFT = 0.15; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;
 InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 %InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
@@ -294,12 +297,13 @@ InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
 
-%THESISGRAPH2 = 1
+THESISGRAPH2 = 1
 if exist('THESISGRAPH2') == 1
-TGPH = figure(3)
+TGPH = figure(3);
+TGPH.Position = [550 270 920 520];
 hold on
 plot(F_0,abs(Q)/10^-15)
-plot([0,2.5*10^10],[1.60217662*10^-4, 1.60217662*10^-4],'r--')    
+% plot([0,5*10^10],[1.60217662*10^-4, 1.60217662*10^-4],'r--')    
 xlabel('Field Strength [$Vm^{-1}$]')
 ylabel('Photoinduced Charge [fC]')    
 TGPH.Position = [550 270 920 540]
@@ -307,30 +311,36 @@ legend('$N_{cyc}$ = 1.0','$N_{cyc}$ = 1.5','$N_{cyc}$ = 2.0','$N_{cyc}$ = 2.5','
        '$N_{cyc}$ = 3.5','$N_{cyc}$ = 4.0','$N_{cyc}$ = 4.5','$N_{cyc}$ = 5.0','$N_{cyc}$ = 5.5','$N_{cyc}$ = 6.0','e')
 grid on
 set(gca,'YScale','log')
-set(gca,'fontsize', 12)
-set(gca, 'FontName', 'Arial')
+set(gca,'fontsize', 15)
+set(gca, 'FontName', 'SMU Serif')
 set(gca,'Box','on')
-InSet = [0.076    0.115    0.14       0.02];
+LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
+end
+%FIG4PLS = 1
+if exist('FIG4PLS') == 1
 TGPH = figure(4)
 hold on
 
-plt1 = area(ETI.ttt.tdisp,real(Ediresdt),'FaceColor','b','LineStyle','none'); %Total overlap = area
-plt2 = plot(ETD.ttt.tdisp,real(ETD.ttt.Etdshift),'r','LineWidth',1); %No Overlap - Shifted pulse
-plt3 = plot(ETI.ttt.tdisp,real(ETI.ttt.Etdisp),'g','LineWidth',1); %No Overlap - Stationary pulse
+plt1 = plot(ETI.ttt.tdisp/10^-15,real(circshift(Ediresdt,ETD.tcirc)),'c');%,'FaceColor','b','LineStyle','none' %Total overlap = area
+plt2 = plot(ETD.ttt.tdisp/10^-15,real(circshift(ETD.ttt.Etdshift,ETD.tcirc)),'r','LineWidth',1); %No Overlap - Shifted pulse
+plt3 = plot(ETI.ttt.tdisp/10^-15,real(0.2*ETI.ttt.Etdispc),'g','LineWidth',1); %No Overlap - Stationary pulse
+legend('Sum','Fundamental','$2_{nd}$ Harmonic')
 %plt4 = plot(Delt./(N_Delt/N),QHarm/max(QHarm)+1,'m'); %Overlap
 %plot(ETI.ttt.tdisp,real(Ediresdt),'b','LineWidth',1.3);
 
-xlabel('$\Delta t$ [s]')
+xlabel('$\Delta t$ [fs]')
 ylabel('Sum of Vector Potential')
-axis([ETI.ttt.tdisp(1) ETI.ttt.tdisp(end) -3 3])
+axis([ETI.ttt.tdisp(3400)/10^-15 ETI.ttt.tdisp(end-3400)/10^-15 -1.2 2])
 
 %xlabel('\Delta t [s]')
-TGPH.Position = [550 270 360 620]
+TGPH.Position = [550 270 560 520]
 grid on
 set(gca,'fontsize', 16)
 set(gca, 'FontName', 'Computer Modern')
 set(gca,'Box','on')
-InSet = [0.17    0.115    0.03       0.06]; %Fontsize 12
+LEFT = 0.15; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
