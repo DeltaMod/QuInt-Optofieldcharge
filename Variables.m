@@ -41,16 +41,16 @@ clear WavLen
 nind = n_ref; lambrange = linspace(0.21,6.7,1000); % \mu m
 
 %n_ref= fun_n(lambda_0);                                                                   %units none
-GD    = (1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1))) / 1000;                                %units s/mm
+GD    = (1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1))) / 1000;                               %units s/mm
 GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000;                                          %units s^2/mm
 TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000;   %units s^3/mm
 
 
-SiO2.n   = n_ref;        % Refractive Index  - CEP replaces this later. 
-SiO2.GD  = L*GD;         % s^2               - Group Delay
-SiO2.GVD = L*GVD;        % s^2               - Group Velocity dispersion
-SiO2.TOD = L*TOD;        % s^3               - Third Order Dispersion
-
+SiO2.n   = n_ref;               % Refractive Index  - CEP replaces this later. 
+SiO2.CD  = L*(nd1*10^3)*2*pi;   %                   - Cromatic dispersion
+SiO2.GD  = L*GD;                % s^1               - Group Delay
+SiO2.GVD = L*GVD;               % s^2               - Group Velocity dispersion
+SiO2.TOD = L*TOD;               % s^3               - Third Order Dispersion
 
 
 A_t      = 1;                      % no unit           - Amplitude

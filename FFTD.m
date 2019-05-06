@@ -68,7 +68,7 @@ A.t_w1 = -A.Dt_w/2; A.t_w2 = A.Dt_w/2;              % Determining time axis star
 
 
 fun_theta = @(theta) theta*pi();                                        % This sets phase offset
-fun_phiw = @(phi0, phi1, phi2, phi3,w,w_0) phi0                       +...  %phi_0 is Carrier Envelope Phase - Values of pi() 
+fun_phiw = @(phi0, phi1, phi2, phi3,w,w_0)     phi0                   +...  %phi_0 is Carrier Envelope Phase - Values of pi() 
                                                phi1.*((w-w_0))        +...  %phi_1 is the Group Delay 
                                                phi2.*((w-w_0).^2)/2   +...  %phi_2 is the Group Velocity Dispersion GVD
                                                phi3.*((w-w_0).^3)/6 ;       %phi_3 is the Third Order Dispersion 

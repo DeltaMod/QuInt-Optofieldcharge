@@ -1,6 +1,6 @@
 %% This UI Document is used to plot the graphs, and nothing else! %%
-if exist('POPOUT','var') == 1 %Old Pos [525 270 870 540] %Use for simple photo [450 270 720 540] Orig: [550 270 920 520] 
-FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 560 520] ; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
+if exist('POPOUT','var') == 1 %Old Pos [525 270 870 540] %Use for simple photo [450 270 720 540] Orig: [550 270 920 520] %[550 270 560 520]
+FIG = figure(1); FIG.Renderer = 'painters'; FIG.Position = [550 270 920 520] ; FIG.Name = PlotSelect{1}; %Old Ratio: [480 270 960 540]
 end
 
 %Generate Legend Names
@@ -141,17 +141,17 @@ if PlotSelect == "Post Dispersion Photoinduced Charge"
 xlabel('Optical Field [Vm$^{-1}$]')
 ylabel('Photinduced Charge [fC]')
 
-%THESISGRAPH = 1; % Warning: This seems to be really buggy, don't expect it
+THESISGRAPH = 1; % Warning: This seems to be really buggy, don't expect it
 %to work outright when you try -Code is sloppy!
 if exist('THESISGRAPH') == 1
-    NREP = 15;
+    NREP = 60;
     if exist('TGRPH') == 0
         TGRPH  = 1;
     end
 while TGRPH < NREP
 LLeg{TGRPH} = ['L = ',num2str(L*10^3),' $\mu m$'];
 Lrng(TGRPH) = L;
-L = Lrng(1)+(TGRPH-1)*2e-5;
+L = Lrng(1)+(TGRPH-1)*1e-3;
 Qpc(TGRPH,:) = Q;
 TGRPH  = 1+TGRPH;
 if TGRPH<NREP+1
@@ -297,7 +297,7 @@ InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 end
 
-THESISGRAPH2 = 1
+%THESISGRAPH2 = 1
 if exist('THESISGRAPH2') == 1
 TGPH = figure(3);
 TGPH.Position = [550 270 920 520];
