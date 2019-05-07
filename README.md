@@ -15,13 +15,36 @@ Reproduction and expansion of a models created by Jacob B. Khurgin. Includes a G
 ( | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | )    
 |/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/   
  </pre>
+ 
+ + KhurginUI.m: To launch the UI, run this script - It will open a window containing a figure plotter and variable selector.
+			-Select a simulation with the dropdown, then select a plot. If you have run the simulation once, you can simply change the plots without needing to run the simulation again.
+			-Click on Popout/Dock (The text is buggy, but the feature is not) graph to plot inside of a figure window - This will let you save your plots
+			-Save Preset will save all currently entered variables (as well as the corresponding simulation and graph selection)
+			-Load Preset will load the saved variables from a file
+			-Everything else should be self explanatory :)
+----------------------------------------------------------------------------------------------------------------------------------------+KhurginUI.fig - Needlessly oversized guide file which defines the UI - You just need it in the folder when running KhurginUI, and it should work. To make changes, type `guide` after setting your folder destination to this folder.
+----------------------------------------------------------------------------------------------------------------------------------------
++ FigPos.m - Small script that detects your screensize and divides it into a 3x3 figure plotting grid. 
+Use: f = figure(1); f.Position = FigPos(1,1). Documentation exists in the script, `help FigPos`
+----------------------------------------------------------------------------------------------------------------------------------------
++ PhotoinducedChargetoUI.m - Script responsible for runnig a fourier limited version of the code. It calls fun_Q after determining a(t).
+			-Note, most of its functionality can be replicated (and better) in DispersionToUI.m
+---------------------------------------------------------------------------------------------------------------------------------------- 
++ DispersionToUI.m - A script that handles executing the functions necessary to calculate the temporal pulse, to fourier transform said pulse and apply dispersion, before transforming it back. It also handles the temporal delay implementation for the two colour, and cross polarised case It does not require modification, and while it is possible to run as standalone, is designed to be run from the UI
+		- NOTE: Make sure to only set n_min/n_max greater than [-1,1] if you do intend to plot a delay - otherwise, you will be waiting for a long time
+--------------------------------------------------------------------------------------------------------------------------------------- 
++ Variables.m - Sets standard variables and calculates things like the refractive index (only from SiO2 right now), then takes dn/dlambda (first three terms), to find the terms that give determine the GD, GVD and TOD
+----------------------------------------------------------------------------------------------------------------------------------------
++FFTD.m: A function that handles the fourier transform, dispersion application, and inverse fourier transform. Extensive documentation exists in the script itself, either that or call `help FFTD` to find out exactly how it works. 
+---------------------------------------------------------------------------------------------------------------------------------------- 
 + Figures: Contains Misc. Images from earlier versions of the code 
 ------------------------------------------------------------------------------------------------------------------
 + Functions: Contains old versions of fun_Q and fun_QDelt that calculate the optical-field-induced currents
 ------------------------------------------------------------------------------------------------------------------
 + SavedPresets: Contains presets that can be loaded into the GUI to run a specific plot
------ + FigurePlotting: Presets used for the thesis. THESISGRAPH is a variable found inside UIGraphPlotting, it is 
-                        used for more complicated graphs - e.g. Figure 14 from the thesis
+    - FigurePlotting: Presets used for the thesis. THESISGRAPH is a variable found inside UIGraphPlotting, it is 
+                        used for more complicated graphs - e.g. Figure 14 from the thesis. To reproduce, some results, 
+                        you will need to find them (searching for THESIS will do it)
 ------------------------------------------------------------------------------------------------------------------
 + TinyFunctions - Contains fun_Q and fun_QDelt - they are used to calculate the photoinduced charge taking into 
                    consideration N number of terms from <a^2n+1>. Increasing ORD will increase this number.
