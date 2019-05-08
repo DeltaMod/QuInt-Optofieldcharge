@@ -35,7 +35,7 @@ Use: f = figure(1); f.Position = FigPos(1,1). Documentation exists in the script
 --------------------------------------------------------------------------------------------------------------------------------------- 
 + Variables.m - Sets standard variables and calculates things like the refractive index (only from SiO2 right now), then takes dn/dlambda (first three terms), to find the terms that give determine the GD, GVD and TOD
 ----------------------------------------------------------------------------------------------------------------------------------------
-+FFTD.m: A function that handles the fourier transform, dispersion application, and inverse fourier transform. Extensive documentation exists in the script itself, either that or call `help FFTD` to find out exactly how it works. 
++ FFTD.m: A function that handles the fourier transform, dispersion application, and inverse fourier transform. Extensive documentation exists in the script itself, either that or call `help FFTD` to find out exactly how it works. 
 ---------------------------------------------------------------------------------------------------------------------------------------- 
 + Figures: Contains Misc. Images from earlier versions of the code 
 ------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ Use: f = figure(1); f.Position = FigPos(1,1). Documentation exists in the script
 ------------------------------------------------------------------------------------------------------------------
 + TinyFunctions - Contains fun_Q and fun_QDelt - they are used to calculate the photoinduced charge taking into 
                    consideration N number of terms from <a^2n+1>. Increasing ORD will increase this number.
-==================================================================================================================
+------------------------------------------------------------------------------------------------------------------
 + fun_Q(F_0x,F_a,a2disp,Aeff,Order): 
 
                                      F_0x   - Field strength (A*10^10 Vm^-1)      [Vector]
@@ -66,15 +66,7 @@ Use: f = figure(1); f.Position = FigPos(1,1). Documentation exists in the script
                                       F_0y  - Injection field (assume F_0x is driving)
                                       
 
-DispersionToUI.m	Add files via upload	11 hours ago
-FFTD.m	Add files via upload	11 hours ago
-FigPos.m	Add files via upload	18 days ago
-KhurginUI.m	Add files via upload	8 days ago
-PhotoInducedChargetoUI.m	Add files via upload	a day ago
-PowerDependence.m	Add files via upload	4 days ago
-ProcessPlotting.psd	Add files via upload	4 days ago
 UIConsoleOutput.m	Add files via upload	18 days ago
-UIGraphPlotter.asv	Add files via upload	4 days ago
 UIGraphPlotter.m	Add files via upload	11 hours ago
 UINCleaner.m	Add files via upload	18 days ago
 UIReinitialise.m	Add files via upload	4 days ago
