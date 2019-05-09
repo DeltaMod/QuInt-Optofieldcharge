@@ -1,20 +1,18 @@
 # QuInt-Optofieldcharge
 Reproduction and expansion of a models created by Jacob B. Khurgin. Includes a GUI that allows for the plotting of variable parameter laser pulses, and have the photoinduced charge on a nanodevice estimated from their dispersed components.
-<pre>                                                                       
-              __                                                    __ 
-           __/ /___________________________________________________/ /_
-          /_  __/_____/_____/_____/_____/_____/_____/_____/_____/_  __/
-           ///    ______            __             __            ///   
-          / /    / ____/___  ____  / /____  ____  / /______     / /    
-         / /    / /   / __ \/ __ \/ __/ _ \/ __ \/ __/ ___/    / /     
-        / /    / /___/ /_/ / / / / /_/  __/ / / / /_(__  )    / /      
-       / /     \____/\____/_/ /_/\__/\___/_/ /_/\__/____/    / /       
-      /_/ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ /_/        
-     ( |_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_| )         
- _ _ |/_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ |/_ _ _     
-( | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | )    
-|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/|/   
- </pre>
+<!-- language: lang-none -->
+        _                                         _   
+      _| |_ ___ ___ ___ ___ ___ ___ ___ ___ ___ _| |_ 
+     |_   _|___|___|___|___|___|___|___|___|___|_   _|
+       |_|     ___         _           _         |_|  
+       | |    / __|___ _ _| |_ ___ _ _| |_ ___   | |  
+       | |   | (__/ _ \ ' \  _/ -_) ' \  _(_-<   | |  
+       | |    \___\___/_||_\__\___|_||_\__/__/   | |  
+       |_|                                       |_|  
+      _| |_ ___ ___ ___ ___ ___ ___ ___ ___ ___ _| |_ 
+     |_   _|___|___|___|___|___|___|___|___|___|_   _|
+       |_|                                       |_|  
+</!-- language: lang-none -->
  
  + KhurginUI.m: To launch the UI, run this script - It will open a window containing a figure plotter and variable selector.
 			-Select a simulation with the dropdown, then select a plot. If you have run the simulation once, you can simply change the plots without needing to run the simulation again.
