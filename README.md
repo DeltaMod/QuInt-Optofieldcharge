@@ -22,7 +22,8 @@ Reproduction and expansion of a models created by Jacob B. Khurgin. Includes a G
 			-Save Preset will save all currently entered variables (as well as the corresponding simulation and graph selection)
 			-Load Preset will load the saved variables from a file
 			-Everything else should be self explanatory :)
-----------------------------------------------------------------------------------------------------------------------------------------+KhurginUI.fig - Needlessly oversized guide file which defines the UI - You just need it in the folder when running KhurginUI, and it should work. To make changes, type `guide` after setting your folder destination to this folder.
+----------------------------------------------------------------------------------------------------------------------------------------
++ KhurginUI.fig - Needlessly oversized guide file which defines the UI - You just need it in the folder when running KhurginUI, and it should work. To make changes, type `guide` after setting your folder destination to this folder.
 ----------------------------------------------------------------------------------------------------------------------------------------
 + FigPos.m - Small script that detects your screensize and divides it into a 3x3 figure plotting grid. 
 Use: f = figure(1); f.Position = FigPos(1,1). Documentation exists in the script, `help FigPos`
