@@ -1,17 +1,18 @@
 # QuInt-Optofieldcharge
 Reproduction and expansion of a models created by Jacob B. Khurgin. Includes a GUI that allows for the plotting of variable parameter laser pulses, and have the photoinduced charge on a nanodevice estimated from their dispersed components.
-<!-- language: lang-none -->
-        _                                         _   
-      _| |_ ___ ___ ___ ___ ___ ___ ___ ___ ___ _| |_ 
-     |_   _|___|___|___|___|___|___|___|___|___|_   _|
-       |_|     ___         _           _         |_|  
-       | |    / __|___ _ _| |_ ___ _ _| |_ ___   | |  
-       | |   | (__/ _ \ ' \  _/ -_) ' \  _(_-<   | |  
-       | |    \___\___/_||_\__\___|_||_\__/__/   | |  
-       |_|                                       |_|  
-      _| |_ ___ ___ ___ ___ ___ ___ ___ ___ ___ _| |_ 
-     |_   _|___|___|___|___|___|___|___|___|___|_   _|
-       |_|                                       |_|  
+<!-- language: lang-none -->                                                           
+        _                                                     _   
+      _| |_ _____ _____ _____ _____ _____ _____ _____ _____ _| |_ 
+     |_   _|_____|_____|_____|_____|_____|_____|_____|_____|_   _|
+       |_|    ____ ___  _   _ _____ _____ _   _ _____ ____   |_|  
+       | |   / ___/ _ \| \ | |_   _| ____| \ | |_   _/ ___|  | |  
+       | |  | |  | | | |  \| | | | |  _| |  \| | | | \___ \  | |  
+       | |  | |__| |_| | |\  | | | | |___| |\  | | |  ___) | | |  
+       | |   \____\___/|_| \_| |_| |_____|_| \_| |_| |____/  | |  
+       |_|                                                   |_|  
+      _| |_ _____ _____ _____ _____ _____ _____ _____ _____ _| |_ 
+     |_   _|_____|_____|_____|_____|_____|_____|_____|_____|_   _|
+       |_|                                                   |_|
 </!-- language: lang-none -->
  
  + KhurginUI.m: To launch the UI, run this script - It will open a window containing a figure plotter and variable selector.
