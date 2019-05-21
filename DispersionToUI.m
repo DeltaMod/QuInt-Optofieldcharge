@@ -4,28 +4,29 @@
 %% -- Modelling Optically Induced Currents -- %%
 
 if exist('UIRUN','var') == 0
-    disp('UIRUN =/= 1, running with default variables.')
+addpath(genpath(fileparts(which('Variables.m'))))
+set(0, 'defaultAxesTickLabelInterpreter','latex'); set(0, 'defaultLegendInterpreter','latex'); set(0, 'defaultTextInterpreter','latex');
+set(0,'defaultAxesFontName', 'CMU Serif'); set(0,'defaultTextFontName', 'CMU Serif');
+
+disp('UIRUN =/= 1, running with default variables.')
 SimSelect = "Dispersion and Photoinduced Charge";
 addpath(genpath(fileparts(which('Variables.m'))))
 %% -- Constants -- &&
 fprintf('Running non-UI version -- Check Variables')
 eps_0    = 8.85418782 * 10^-12;    %m^-3kg^-1s^4A^2    - Permittivity of free space
-Chi1     = (1:4).^2 - 1;           %No units           - First order susceptibility
-Chi2     = 1;                      %Unused             - Second order susceptibility
-Chi3     = 2*10^-22;               %m^2V^-2            - Third order susceptibility (This is for Silica)
 F_0      = (0:0.05:2.5).*(10^10);  %Vm^-1              - Optical Field
 %% -- Variable Parameters -- %%
-f_0x     = 375*10^12;             %Hz                 - Laser frequency (From our lab)                    %Hz- For Fig4, use this f_0 = 1 to get the same result as they did.
-f_0y     = 375*10^12*2;            %Hz                 - Laser frequency (first Harmonic) 
+f_0x     = 375*10^12;              %Hz                - Laser frequency (From our lab) 
+f_0y     = 375*10^12*2;            %Hz                - Laser frequency (first Harmonic) 
 c        = 299792458 ;             %m/s
 lambda_0 = c/f_0x;                 % m
-w_0x     = 2*pi()*f_0x;           %Rad/s              - Laser Frequency
-w_0y     = 2*pi()*f_0y;            %Rad/s              - Laser Frequency
-Aeff     = 2.3*10^-12;             % m^2               - Effective area 
-Ncycx    = 1.5;                   % no unit           - Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
-Ncycy    = 1.5;                    % no unit           - Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
-F_a      = 5.36*10^10;             % Vm^-1             - Atomic Field
-L        = 0.1;                    % mm                - Length of material dispersion
+w_0x     = 2*pi()*f_0x;            %Rad/s             - Laser Frequency
+w_0y     = 2*pi()*f_0y;            %Rad/s             - Laser Frequency
+Aeff     = 2.3*10^-12;             % m^2              - Effective area 
+Ncycx    = 1.5;                    % no unit          - Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
+Ncycy    = 1.5;                    % no unit          - Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
+F_a      = 5.36*10^10;             % Vm^-1            - Atomic Field
+L        = 0.1;                    % mm               - Length of material dispersion
 fun_n    = @(lambda) sqrt( ((0.6961663*(lambda*10^6)^2)/((lambda*10^6)^2 - 0.0684043^2)) + ...
                            ((0.4079426*(lambda*10^6)^2)/((lambda*10^6)^2 - 0.1162414^2)) + ...
                            ((0.8974794*(lambda*10^6)^2)/((lambda*10^6)^2 - 9.896161^2))  +  1); 
@@ -43,12 +44,12 @@ clear WavLen
 %Graph of equation for the relevant range above - we don't really need this though
 nind = n_ref; lambrange = linspace(0.21,6.7,1000); % \mu m
 
-%n_ref= fun_n(lambda_0);                                                                  %units none
+%Calculate Group dispersion, Group Velocity Dispersion and Third order Dispersion;
 GD    = 1/((c/n_ref)/(1 - (lambda_0/n_ref) * nd1)) * 1000;                                 %units s/mm
 GVD   = (lambda_0^3)/(2 * pi * c^2) * nd2 * 1000;                                          %units s^2/mm
 TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3) * 1000;   %units s^3/mm
 
-
+%Calculate terms dispersion factor
 SiO2.n   = n_ref;        % Refractive Index  - CEP replaces this later. 
 SiO2.GD  = L*GD;         % s^2               - Group Delay
 SiO2.GVD = L*GVD;        % s^2               - Group Velocity dispersion
@@ -301,7 +302,7 @@ Estw = FFTD(w,Ew,w_0x,'ftt',SiO2.phi,0);
 %                                                              1/9 QPol2(n) = fun_QDelt(F_0(end)/12.5,F_0(end)/1.25,F_a,a2pol(n,:),Aeff,ORD)  * a2n(4).*(F_0y./F_a).^6+...
 %                                                              1/11* a2n(5).*(F_0y./F_a).^8)*Aeff; 
                                                      
-anim = 1;
+
 
 N_Delt = Delt2 - Delt1 + 1;
 Deltn  = linspace(Delt1,Delt2,N_Delt);
@@ -310,17 +311,12 @@ E_ti = FFTD(t,fun_Et(A_t,t,t_0,T_y,w_0y,0),w_0y,'ttt',SiO2.phi,0);
 Delt = linspace(Delt1*dt,Delt2*dt,N_Delt);
 waitbar(0.5+0.5*0/N,PROGBAR,['Integrating to determine $\left<a^2n+1\right>$','   n/N$\_$Delt = ',num2str(0),'/',num2str(N_Delt)]);
 
-
 for n = 1:N_Delt
 if rem(n,round(N_Delt/100,-1)) == 0
 waitbar(0.5+0.5*n/N_Delt,PROGBAR,['Integrating to determine $\left<a^2n+1\right>$','   n/N$\_$Delt = ',num2str(n),'/',num2str(N_Delt)]);
 %if N/n = A*N/100 1000/200
 end
 E_td.ttt.Etdshift = circshift(E_td.ttt.Etdisp,Deltn(n)); E_td.ttt.tdshift = circshift(E_td.ttt.tdisp,Deltn(n)); 
-%E_wd = fun_Ew(A_w,w ,W,w_0x,fun_phiw(SiO2.phi(1),SiO2.phi(2)+Delt(n),SiO2.phi(3),SiO2.phi(4),w,w_0x));
-%E_wi = fun_Ew(A_w,w,W_y,w_0y,fun_phiw(SiO2.phi(1),SiO2.phi(2),         SiO2.phi(3),SiO2.phi(4),w,w_0y));
-%E_td = FFTD(w,E_wd,'ftt',[SiO2.phi(1),SiO2.phi(2)+n*1e-15,SiO2.phi(3),SiO2.phi(4)],0);
-%E_ti = FFTD(w,E_wi,'ftt',SiO2.phi,0);
 Edires = E_td.ttt.Etdshift+E_ti.ttt.Etdisp;
 
 for m = 1:ORD
@@ -334,7 +330,7 @@ QPol(n)  = fun_QDelt(F_0x,F_0y,F_a,a2pol(n,:),Aeff,ORD);
  
 %% In case you want animation of the transformation here :)
 
-
+anim = 1;
 if anim == 0
     figure(67); clf;
 subplot(3,1,1)
@@ -375,34 +371,46 @@ waitbar(1,PROGBAR,'DONE!'); %pause(0.5);
 delete(PROGBAR)
 evalin('base','UIGraphPlotter')
 
+
+
 THESISGRAPHS = 0;
 if THESISGRAPHS == 1 %This is for when you wish to reproduce graphs for your paper, keep these constant so you don't need to type them in again
-close all;
-%% Plotting different phi_n dispersion graphs, we do this to show exactly how the different components interact
-FIG = figure(1); clf; FIG.Name = 'E_w->E_t For Different \phi_n'; FIG.Position = FigPos(2,2);
-     %Note, the last number helps 
-for n = 1
-    DISP.A = [0 0 0 0 0]; 
-    DISP.B = [30 0 0 0 1];
-    DISP.C = [0 20*(10^-15) 0 0 2];
-    DISP.D = [0 0 25*(10^-15)^2 0 3];
-    DISP.E = [0 0 0 60*(10^-15)^3 4]; 
-    SiO2.phi = (n)*DISP.E; %For testing purposes
-    SiO2.phi(5) = DISP.E(5);
-phiw  = fun_phiw(SiO2.phi(1),SiO2.phi(2),SiO2.phi(3),SiO2.phi(4),w,w_0x); % Assigning the dispersion component constants, remember that SiO2.phi(1) represents \phi_0
-Ew    = fun_Ew(A_w,w,W_x,w_0x,phiw);   % Using the Ew function to define the frequency space dispersed wave
-nfft  = 2^nextpow2(length(Ew));     % Determining required length (nfft) of frequency axis: Padding by 2^P, where 2^(P-1)<length(Ew) and 2^P>lenght(Ew) (if length(Ew=1000), then P = 10 for instance since 2^10 = 1024>1000
-Ewfft = fftshift(ifft(Ew,nfft));    % Performing the fourier transform using nfft as the N=nfft number of points 
 
-PHITEXT = sprintf(['\\phi_0 = ', num2str(SiO2.phi(1),'%.4g'),'\n',...
-                   '\\phi_1 = ', num2str(SiO2.phi(2),'%.4g'),'\n',...
-                   '\\phi_2 = ', num2str(SiO2.phi(3),'%.4g'),'\n',...
-                   '\\phi_3 = ', num2str(SiO2.phi(4),'%.4g'),'\n']); 
-               cla reset;
-plot(tfft,real(Ewfft)); grid on; fprintf(['\n','Plotting [',PlotSelect{1},']']);
-legend(PHITEXT,'Location','northwest')
-xlabel('Time [s]')
+%% Plotting different phi_n dispersion graphs, we do this to show exactly how the different components interact
+fg = figure(6); clf; FIG.Name = 'E_w->E_t For Different \phi_n'; fg.Position = [550 270 700 520];
+     %Note, the last number helps 
+for n = 5
+    DISP{1} = [0 0 0 0 0]; 
+    DISP{2} = [pi 0 0 0 1];
+    DISP{3} = [0 20*(10^-15) 0 0 2];
+    DISP{4} = [0 0 25*(10^-15)^2 0 3];
+    DISP{5} = [0 0 0 60*(10^-15)^3 4];
+DISPFAC = DISP{n};
+DISPDISP = [pi 20 25 60]
+Estr2 = FFTD(t,Et,w_0x,'ttt',DISPFAC,0);
+if n == 1
+PHITEXT{1} =      ['$\Phi = 0$'];
+elseif n == 2
+    PHITEXT{n} =      ['$\phi_',num2str(n-2),' = ', num2str(DISPDISP(n-1),'%.4g'), '$'];
+else
+    PHITEXT{n} =      ['$\phi_',num2str(n-2),' = ', num2str(DISPDISP(n-1),'%.4g'), '$ fs$^',num2str(n-1),' $'];
+end
+
+cla reset;
+plot(Estr2.ttt.tdisp/10^-15,real(Estr2.ttt.Etdisp)); fprintf(['\n','Plotting [',PlotSelect{1},']']);
+legend(PHITEXT{n},'Location','northwest')
+xlabel('Time [fs]')
 ylabel('Amplitude')
-xlim(10^-13*[-1 1])    
+grid on
+set(gca,'fontsize', 20)
+set(gca,'Box','on')
+LEFT = 0.13; BOTTOM = 0.15; RIGHT = 0.02; TOP = 0.05;
+InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
+xticks('auto')
+Legg=legend(PHITEXT{n},'Location','northwest')
+set(Legg,'FontSize',18)
+axis tight
+ylim([-1 1])
 end    
 end

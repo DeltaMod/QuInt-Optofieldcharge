@@ -2,7 +2,11 @@
 addpath(genpath(fileparts(which('Variables.m'))))
 set(0, 'defaultAxesTickLabelInterpreter','latex'); set(0, 'defaultLegendInterpreter','latex'); set(0, 'defaultTextInterpreter','latex');
 set(0,'defaultAxesFontName', 'CMU Serif'); set(0,'defaultTextFontName', 'CMU Serif');
-
+GUIEDITNAMES = evalin('base','GUIEDITNAMES');
+VAREDITNAMES = evalin('base','VAREDITNAMES');
+for n = 1:length(VAREDITNAMES)
+assignin('base',VAREDITNAMES{n},1)
+end
 if exist('LOADPRESET','var') == 0
 DATAIMPORT = readtable('SessionRestore.dat','Delimiter',';');
 else
@@ -10,10 +14,32 @@ DATAIMPORT = readtable(LOADPRESET,'Delimiter',';');
 clear LOADPRESET
 end
 
-VAR.Handle = DATAIMPORT{1,2:end}; VAR.Mag = DATAIMPORT{2,2:end}; VAR.Dat = VAR.Handle.*VAR.Mag; 
-VAR.Name   = DATAIMPORT.Properties.VariableNames(2:end); 
+%This loads both new and legacy save slots
+ORIGNAMEORDER = DATAIMPORT.Properties.VariableNames(2:end); 
+VAR.Name = VAREDITNAMES;   
+for n = 1:length(GUIEDITNAMES)
+IND = find(strcmp(ORIGNAMEORDER,VAREDITNAMES{n}));
+if isempty(IND) == 1
+    VAR.Mag(n)    = 1;
+    VAR.Handle(n) = 1;
+    VAR.Dat(n)    = 1;
+elseif isempty(IND) == 0
+    VAR.Mag(n)    = DATAIMPORT{2,1+IND};
+    VAR.Handle(n) = DATAIMPORT{1,1+IND};
+    VAR.Dat(n)    = VAR.Handle(n).*VAR.Mag(n);   
+end
+end
+    
+
+% VAR.Handle = DATAIMPORT{1,2:end}; VAR.Mag = DATAIMPORT{2,2:end}; VAR.Dat = VAR.Handle.*VAR.Mag; 
+% VAR.Name   = DATAIMPORT.Properties.VariableNames(2:end); 
 VAR.Sim    = DATAIMPORT{4,1};
 VAR.Plot   = DATAIMPORT{5,1};
+if height(DATAIMPORT) == 5
+VAR.LLP    = cellstr('None');
+elseif height(DATAIMPORT) == 6
+VAR.LLP    = DATAIMPORT{6,1};
+end
  assignin('base','VAR',VAR);
 for n = 1:length(VAR.Dat)
 feval(@()assignin('caller',VAR.Name{n},VAR.Handle(n))); assignin('base',VAR.Name{n},VAR.Dat(n))   
@@ -52,27 +78,30 @@ end
 assignin('base','CONSOLEHISTORY',[{''},{''},{''},{''},{''},{''},{''},{''}])
 
 %% Setting up Initial UI Values %%
+for n = 1:length(GUIEDITNAMES)
+    set(handles.(GUIEDITNAMES{n}), 'String',VAR.Handle(n))
+end
+% set(handles.UIf_0x,              'String', f_0x)
+% set(handles.UIf_0y,              'String', f_0y)
+% set(handles.UIF_0x,              'String', F_0x)
+% set(handles.UIF_0y,              'String', F_0y)
+% set(handles.UIAeff,              'String', Aeff)
+% set(handles.UIL,                 'String', L)
+% set(handles.UINcycx,             'String', Ncycx)
+% set(handles.UINcycy,             'String', Ncycy)
+% set(handles.UIt1,                'String', t1)
+% set(handles.UIt2,                'String', t2)
+% set(handles.UIN,                 'String', N)
+% set(handles.UIBPF,               'String', BPF);
+% set(handles.UIDelt1,             'String', Delt1)
+% set(handles.UIDelt2,             'String', Delt2)
+% set(handles.UIORD,               'String', ORD)
 
-set(handles.UIf_0x,              'String', f_0x)
-set(handles.UIf_0y,              'String', f_0y)
-set(handles.UIF_0x,              'String', F_0x)
-set(handles.UIF_0y,              'String', F_0y)
-set(handles.UIAeff,              'String', Aeff)
-set(handles.UIL,                 'String', L)
-set(handles.UINcycx,             'String', Ncycx)
-set(handles.UINcycy,             'String', Ncycy)
-set(handles.UIt1,                'String', t1)
-set(handles.UIt2,                'String', t2)
-set(handles.UIN,                 'String', N)
-set(handles.UIBandPassFilter,    'String', BPF);
-set(handles.UIDelt1,             'String', Delt1)
-set(handles.UIDelt2,             'String', Delt2)
-set(handles.UIORD,               'String', ORD)
 set(handles.UISimulationSelector,'Value',SimIndex);                 %Sets the value of the Simulation selector to 1
 set(handles.UISimulationSelector,'String',SimulationSelect);                 %Sets the handles for all Simulation items in dropdow
 set(handles.UIPlotSelect,        'Value',PlotIndex);                         %Sets the value of the Plot selector to the correct index
 set(handles.UIPlotSelect,        'String',PlotSelectList{SimIndex});        %Sets the handles for all graphs for said simulation in dropdown
-set(handles.UISliderDelt,        'Value', 1)
+set(handles.UISliderPos,           'Value', 1)
 
 
 

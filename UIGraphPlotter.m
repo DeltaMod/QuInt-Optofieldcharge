@@ -144,7 +144,7 @@ ylabel('Photinduced Charge [fC]')
 THESISGRAPH = 1; % Warning: This seems to be really buggy, don't expect it
 %to work outright when you try -Code is sloppy!
 if exist('THESISGRAPH') == 1
-    NREP = 60;
+    NREP = 120;
     if exist('TGRPH') == 0
         TGRPH  = 1;
     end
@@ -173,7 +173,6 @@ set(gca,'fontsize', 15)
 set(gca,'Box','on')
 LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
 InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
-%InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
 
 figure(2)
@@ -186,8 +185,8 @@ set(gca,'Box','on')
 axis tight
 LEFT = 0.12; BOTTOM = 0.13; RIGHT = 0.05; TOP = 0.05;    
 InSet = [LEFT BOTTOM RIGHT TOP]; %Fontsize 12
-%InSet = [0.105    0.12    0.018         0.02]; %Fontsize 14
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
+
 end
 PLOTDONE = 1;
 end

@@ -4,8 +4,6 @@ Chi1  = (1:4).^2 - 1;           %No units           - First order susceptibility
 Chi2  = 1;                      %Unused             - Second order susceptibility
 Chi3  = 2*10^-22;               %m^2V^-2            - Third order susceptibility (This is for Silica)
 F_0   = linspace(0,F_0x,5000);  %Vm^-1              - Optical Field
-F2_0  = 1;                      %Unused             - 
-F3_0  = 1;                      %Unused             -
 
 %% -- Variables -- %%
 c        = 299792458 ;             %m/s
@@ -47,7 +45,7 @@ TOD   = -((lambda_0)/(2 * pi() * c))^2 * 1/c * (3*lambda_0^2*nd2+lambda_0^3*nd3)
 
 
 SiO2.n   = n_ref;               % Refractive Index  - CEP replaces this later. 
-SiO2.CD  = L*(nd1*10^3)*2*pi;   %                   - Cromatic dispersion
+SiO2.CD  = L*((-0.23+nd1)*10^3)*2*pi();   %                   - Cromatic dispersion
 SiO2.GD  = L*GD;                % s^1               - Group Delay
 SiO2.GVD = L*GVD;               % s^2               - Group Velocity dispersion
 SiO2.TOD = L*TOD;               % s^3               - Third Order Dispersion
