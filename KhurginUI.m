@@ -23,7 +23,7 @@ function varargout = KhurginUI(varargin)
 
 % Edit the above text to modify the response to help KhurginUI
 
-% Last Modified by GUIDE v2.5 28-Apr-2019 12:52:43
+% Last Modified by GUIDE v2.5 21-May-2019 00:54:05
 
 %% How to add new variable
 %REPLACE = str2num(get(hObject,'String'))*10^mag;
@@ -69,6 +69,16 @@ evalin( 'base', 'clearvars *' )
 UIRUN = 0;     assignin('base','UIRUN',UIRUN); 
 %Allow only for quick plotting once the simulation is finished
 assignin('base','QuickGraph',0)
+GUIHANDLES = flip(findobj('Type','uicontrol','Style','edit'));
+
+GUIEDITNAMES = cellstr(GUIHANDLES(1).Tag);
+VAREDITNAMES = cellstr(GUIHANDLES(1).Tag(3:end));
+for n = 2:length(GUIHANDLES)
+GUIEDITNAMES = [GUIEDITNAMES,cellstr(GUIHANDLES(n).Tag)];
+VAREDITNAMES = [VAREDITNAMES,cellstr(GUIHANDLES(n).Tag(3:end))];
+end
+assignin('base','GUIEDITNAMES',GUIEDITNAMES);
+assignin('base','VAREDITNAMES',VAREDITNAMES);
 %% NOTE - Newer versions of Matlab support the use of double quotes("") to define strings, but this old version needs to use the string(''), so please take care!
 run UIReinitialise
 %% We load our variables from a file called "Default Variables", but I will rename this "Last Session" later
@@ -224,7 +234,7 @@ VAR = evalin('base','VAR'); Index = find(ismember(VAR.Name, 'f_0x'));
 VAR.Handle(Index) = f_0x/VAR.Mag(Index); VAR.Dat(Index) = f_0x; assignin('base','VAR',VAR)
 guihandles.Var.f_0x = f_0x;
 % Do this to retrieve variables from your figure's workspace.
-CONSOLECALLBACK = ['Setting f_0x = ', num2str(guihandles.Var.f_0x), ' s']; 
+CONSOLECALLBACK = ['Setting f_0x = ', num2str(guihandles.Var.f_0x), ' Hz']; 
 run UIConsoleOutput; drawnow;
 
 
@@ -254,7 +264,7 @@ VAR = evalin('base','VAR'); Index = find(ismember(VAR.Name, 'f_0y'));
 VAR.Handle(Index) = f_0y/VAR.Mag(Index); VAR.Dat(Index) = f_0y; assignin('base','VAR',VAR)
 guihandles.Var.f_0y = f_0y;
 % Do this to retrieve variables from your figure's workspace.
-CONSOLECALLBACK = ['Setting f_0y = ', num2str(guihandles.Var.f_0y), ' s']; 
+CONSOLECALLBACK = ['Setting f_0y = ', num2str(guihandles.Var.f_0y), ' Hz']; 
 run UIConsoleOutput; drawnow;
 
 % --- Executes during object creation, after setting all properties.
@@ -426,8 +436,8 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-function UIBandPassFilter_Callback(hObject, eventdata, handles)
-% hObject    handle to UIBandPassFilter (see GCBO)
+function UIBPF_Callback(hObject, eventdata, handles)
+% hObject    handle to UIBPF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 BPF = str2num(get(hObject,'String'));
@@ -441,8 +451,8 @@ run UIConsoleOutput; drawnow;
 
 
 % --- Executes during object creation, after setting all properties.
-function UIBandPassFilter_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to UIBandPassFilter (see GCBO)
+function UIBPF_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to UIBPF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -521,23 +531,14 @@ SimSelect = evalin('base','SimSelect');
 %% -- Constants are in Variables.m, add more as needed -- %%
 
 %% -- Variables -- %%
-f_0x     = evalin('base','f_0x');   %Hz
-f_0y     = evalin('base','f_0y');  %Hz
-F_0x     = evalin('base','F_0x');   %Hz
-F_0y     = evalin('base','F_0y');  %Hz
+VAREDITNAMES = evalin('base','VAREDITNAMES');
+for n = 1:length(VAREDITNAMES)
+eval([VAREDITNAMES{n}, '= evalin(''base'',VAREDITNAMES{n})']);
+end
 w_0x     = 2*pi()*f_0x;             %Rad/s              - Laser Frequency
-w_0y     = 2*pi()*f_0y;            %Rad/s              - Laser Frequency
-Aeff     = evalin('base','Aeff');   %m^2                - Effective area  
-L        = evalin('base','L');      %mm                - Sample Thickness 
-Ncycx    = evalin('base','Ncycx');  % Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
-Ncycy     = evalin('base','Ncycy');  % Number of optical cycles in the pulse?s FWHM (Khurgin uses 1.7 in the paper)
-Delt1    = evalin('base','Delt1'); % Shift of t_0 start
-Delt2    = evalin('base','Delt2'); % Shift of t_0 end
-BPF      = evalin('base','BPF');    % No unit           - Bandpass filter MaxAmp/Filter
-N        = evalin('base','N');
+w_0y     = 2*pi()*f_0y;             %Rad/s              - Laser Frequency
 T_y      = (Ncycx*2*pi())/w_0x;          %seconds - Pulse Duration (downconverted)
 T_y      = (Ncycy*2*pi())/w_0y;          %seconds - Pulse Duration (downconverted)
-t1       = evalin('base','t1'); t2 = evalin('base','t2');
 t        = linspace(t1,t2,N);    %seconds - Time
 t_0      = (t1+t2)/2; assignin('base','t_0', t_0)    
 
@@ -574,15 +575,9 @@ function UIClearAll_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 VAR = evalin('base','VAR');
-FileName = ('SavedPresets/SessionRestore.dat');
-LName    = [sprintf('Name ; '     ),sprintf('%s ; ',VAR.Name{:})  ]; LName   = LName(1:end-3);
-LHandle  = [sprintf('Handle ; '   ),sprintf('%d ; ',VAR.Handle(:))]; LHandle = LHandle(1:end-3);
-LMag     = [sprintf('Magnitude ; '),sprintf('%d ; ',VAR.Mag(:))   ]; LMag    = LMag(1:end-3);
-LDat     = [sprintf('Data ; '     ),sprintf('%d ; ',VAR.Dat(:))   ]; LDat    = LDat(1:end-3);
-LSim     = [                        sprintf('%s ; ',VAR.Sim{:})   ]; LSim    = LSim(1:end-3);
-LPlot    = [                        sprintf('%s ; ',VAR.Plot{:})  ]; LPlot   = LPlot(1:end-3);
-FULLTEXT =  sprintf([LName,'\n',LHandle,'\n',LMag,'\n',LDat,'\n',LSim,'\n',LPlot]);
-dlmwrite(FileName,FULLTEXT,'delimiter','')
+PathName = ('SavedPresets/');
+FileName = ('SessionRestore.dat');
+run UISaveVariables
 fprintf(['\nRestoring to Current Settings: ',FileName,'\n',' = ','\n',FULLTEXT])
 
 
@@ -599,15 +594,9 @@ run UIReinitialise
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 VAR = evalin('base','VAR');
-FileName = ('SavedPresets/SessionRestore.dat');
-LName    = [sprintf('Name ; '     ),sprintf('%s ; ',VAR.Name{:})  ]; LName   = LName(1:end-3);
-LHandle  = [sprintf('Handle ; '   ),sprintf('%d ; ',VAR.Handle(:))]; LHandle = LHandle(1:end-3);
-LMag     = [sprintf('Magnitude ; '),sprintf('%d ; ',VAR.Mag(:))   ]; LMag    = LMag(1:end-3);
-LDat     = [sprintf('Data ; '     ),sprintf('%d ; ',VAR.Dat(:))   ]; LDat    = LDat(1:end-3);
-LSim     = [                        sprintf('%s ; ',VAR.Sim{:})   ]; LSim    = LSim(1:end-3);
-LPlot    = [                        sprintf('%s ; ',VAR.Plot{:})  ]; LPlot   = LPlot(1:end-3);
-FULLTEXT =  sprintf([LName,'\n',LHandle,'\n',LMag,'\n',LDat,'\n',LSim,'\n',LPlot]);
-dlmwrite(FileName,FULLTEXT,'delimiter','')
+PathName = ('SavedPresets/');
+FileName = ('SessionRestore.dat');
+run UISaveVariables
 fprintf(['\nSaved Preset as: ',FileName,'\n',' = ','\n',FULLTEXT])
 delete(hObject);
 
@@ -622,14 +611,7 @@ function UISavePreset_Callback(hObject, eventdata, handles)
 VAR = evalin('base','VAR');
 [FileName,PathName] = uiputfile('SavedPresets/*.txt','Select a name for your preset!');
 if FileName ~= 0
-LName    = [sprintf('Name ; '     ),sprintf('%s ; ',VAR.Name{:})  ]; LName   = LName(1:end-3);
-LHandle  = [sprintf('Handle ; '   ),sprintf('%d ; ',VAR.Handle(:))]; LHandle = LHandle(1:end-3);
-LMag     = [sprintf('Magnitude ; '),sprintf('%d ; ',VAR.Mag(:))   ]; LMag    = LMag(1:end-3);
-LDat     = [sprintf('Data ; '     ),sprintf('%d ; ',VAR.Dat(:))   ]; LDat    = LDat(1:end-3);
-LSim     = [                        sprintf('%s ; ',VAR.Sim{:})   ]; LSim    = LSim(1:end-3);
-LPlot    = [                        sprintf('%s ; ',VAR.Plot{:})  ]; LPlot   = LPlot(1:end-3);
-FULLTEXT =  sprintf([LName,'\n',LHandle,'\n',LMag,'\n',LDat,'\n',LSim,'\n',LPlot]);
-dlmwrite([PathName,FileName],FULLTEXT,'delimiter','')
+    run UISaveVariables
 fprintf(['\nSaved Preset as: ',FileName,'\n',' = ','\n',FULLTEXT])
     CONSOLECALLBACK = ['Saved Preset']; run UIConsoleOutput; drawnow;
 else
@@ -639,8 +621,10 @@ end
 
 % --- Executes on button press in UILoadPreset.
 function UILoadPreset_Callback(hObject, eventdata, handles)
-LOADPRESET = uigetfile('SavedPresets/*.txt','Select a Preset');
-if LOADPRESET ~= 0    
+LOADPRESET = uigetfile('SavedPresets/*.txt','Select a Preset')
+if LOADPRESET ~= 0
+VAR = evalin('base','VAR'); VAR.LLP = cellstr(LOADPRESET); assignin('base','VAR',VAR);
+set(handles.UILoadedPreset,'String',sprintf(['Last Loaded Preset: ',VAR.LLP{1}]))
 PRESETCALLBACK = LOADPRESET;
 CONSOLECALLBACK = ['Loading Preset...']; run UIConsoleOutput; drawnow;
 run UIReinitialise
@@ -654,20 +638,21 @@ end
 
 
 % --- Executes on slider movement.
-function UISliderDelt_Callback(hObject, eventdata, handles)
-% hObject    handle to UISliderDelt (see GCBO)
+function UISliderPos_Callback(hObject, eventdata, handles)
+% hObject    handle to UISliderPos (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 N = evalin('base','N');
 VAR = evalin('base','VAR'); Index1 = find(ismember(VAR.Name, 'Delt1')); Index2 = find(ismember(VAR.Name, 'Delt2'));
 Delt1 = VAR.Handle(Index1); Delt2 = VAR.Handle(Index2); 
 set(hObject,'Min',Delt1); set(hObject,'Max',Delt2); set(hObject,'SliderStep',[1/(Delt2-Delt1), 1/(Delt2-Delt1)]); 
-Slidern   =  round(get(hObject,'Value'));
+TDn   =  round(get(hObject,'Value'));
 t1 = evalin('base','t1'); t2 = evalin('base','t2'); dt = (t2-t1)/N;
-CurrDeltT = Slidern*dt;
-assignin('base','Slidern',Slidern);
+CurrDeltT = TDn*dt;
+assignin('base','TDn',TDn);
 set(handles.UISelectedDelay,'String',num2str(CurrDeltT/1e-15))
-set(handles.UICurrentDeltn,'String',num2str(Slidern))
+set(handles.UISliderPos,'String',num2str(TDn)); 
+set(handles.UITDn,'String',round(TDn))
 if evalin('base','QuickGraph') == 1
     evalin('base','UIGraphPlotter')
 end
@@ -679,8 +664,8 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function UISliderDelt_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to UISliderDelt (see GCBO)
+function UISliderPos_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to UISliderPos (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -842,29 +827,30 @@ end
 
 
 
-function UICurrentDeltn_Callback(hObject, eventdata, handles)
-% hObject    handle to UICurrentDeltn (see GCBO)
+function UITDn_Callback(hObject, eventdata, handles)
+% hObject    handle to UITDn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-Slidern = round(str2num(get(hObject,'String')));
-assignin('base','Slidern',Slidern);
+TDn = round(str2num(get(hObject,'String')));
+assignin('base','TDn',TDn);
 N = evalin('base','N');
 t1 = evalin('base','t1'); t2 = evalin('base','t2'); dt = (t2-t1)/N;
-CurrDeltT = Slidern*dt;
+CurrDeltT = TDn*dt;
 set(handles.UISelectedDelay,'String',num2str(CurrDeltT/1e-15))
-set(handles.UICurrentDeltn,'String',num2str(Slidern))
-set(handles.UISliderDelt,'Value',Slidern)
-CONSOLECALLBACK = ['Setting Slidern = ', num2str(Slidern)]; 
+set(handles.UITDn,'String',num2str(TDn))
+set(handles.UISliderPos,'Value',TDn)
+drawnow
+CONSOLECALLBACK = ['Setting Slidern = ', num2str(TDn)]; 
 run UIConsoleOutput; drawnow;
 
 
-% Hints: get(hObject,'String') returns contents of UICurrentDeltn as text
-%        str2double(get(hObject,'String')) returns contents of UICurrentDeltn as a double
+% Hints: get(hObject,'String') returns contents of UISliderPos as text
+%        str2double(get(hObject,'String')) returns contents of UISliderPos as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function UICurrentDeltn_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to UICurrentDeltn (see GCBO)
+function UITDn_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to UITDn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
