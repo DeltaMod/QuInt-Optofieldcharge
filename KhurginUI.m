@@ -69,16 +69,6 @@ evalin( 'base', 'clearvars *' )
 UIRUN = 0;     assignin('base','UIRUN',UIRUN); 
 %Allow only for quick plotting once the simulation is finished
 assignin('base','QuickGraph',0)
-GUIHANDLES = flip(findobj('Type','uicontrol','Style','edit'));
-
-GUIEDITNAMES = cellstr(GUIHANDLES(1).Tag);
-VAREDITNAMES = cellstr(GUIHANDLES(1).Tag(3:end));
-for n = 2:length(GUIHANDLES)
-GUIEDITNAMES = [GUIEDITNAMES,cellstr(GUIHANDLES(n).Tag)];
-VAREDITNAMES = [VAREDITNAMES,cellstr(GUIHANDLES(n).Tag(3:end))];
-end
-assignin('base','GUIEDITNAMES',GUIEDITNAMES);
-assignin('base','VAREDITNAMES',VAREDITNAMES);
 %% NOTE - Newer versions of Matlab support the use of double quotes("") to define strings, but this old version needs to use the string(''), so please take care!
 run UIReinitialise
 %% We load our variables from a file called "Default Variables", but I will rename this "Last Session" later
@@ -622,8 +612,8 @@ end
 % --- Executes on button press in UILoadPreset.
 function UILoadPreset_Callback(hObject, eventdata, handles)
 LOADPRESET = uigetfile('SavedPresets/*.txt','Select a Preset')
-if LOADPRESET ~= 0
 VAR = evalin('base','VAR'); VAR.LLP = cellstr(LOADPRESET); assignin('base','VAR',VAR);
+if LOADPRESET ~= 0
 set(handles.UILoadedPreset,'String',sprintf(['Last Loaded Preset: ',VAR.LLP{1}]))
 PRESETCALLBACK = LOADPRESET;
 CONSOLECALLBACK = ['Loading Preset...']; run UIConsoleOutput; drawnow;

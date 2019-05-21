@@ -2,8 +2,17 @@
 addpath(genpath(fileparts(which('Variables.m'))))
 set(0, 'defaultAxesTickLabelInterpreter','latex'); set(0, 'defaultLegendInterpreter','latex'); set(0, 'defaultTextInterpreter','latex');
 set(0,'defaultAxesFontName', 'CMU Serif'); set(0,'defaultTextFontName', 'CMU Serif');
-GUIEDITNAMES = evalin('base','GUIEDITNAMES');
-VAREDITNAMES = evalin('base','VAREDITNAMES');
+
+GUIHANDLES = flip(findobj('Type','uicontrol','Style','edit'));
+GUIEDITNAMES = cellstr(GUIHANDLES(1).Tag);
+VAREDITNAMES = cellstr(GUIHANDLES(1).Tag(3:end));
+for n = 2:length(GUIHANDLES)
+GUIEDITNAMES = [GUIEDITNAMES,cellstr(GUIHANDLES(n).Tag)];
+VAREDITNAMES = [VAREDITNAMES,cellstr(GUIHANDLES(n).Tag(3:end))];
+end
+assignin('base','GUIEDITNAMES',GUIEDITNAMES);
+assignin('base','VAREDITNAMES',VAREDITNAMES);
+
 for n = 1:length(VAREDITNAMES)
 assignin('base',VAREDITNAMES{n},1)
 end
@@ -37,7 +46,7 @@ VAR.Sim    = DATAIMPORT{4,1};
 VAR.Plot   = DATAIMPORT{5,1};
 if height(DATAIMPORT) == 5
 VAR.LLP    = cellstr('None');
-elseif height(DATAIMPORT) == 6
+else 
 VAR.LLP    = DATAIMPORT{6,1};
 end
  assignin('base','VAR',VAR);
