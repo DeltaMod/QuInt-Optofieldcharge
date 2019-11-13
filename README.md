@@ -73,4 +73,5 @@ UIReinitialise.m	Add files via upload	4 days ago
 Untitled.m	Add files via upload	18 days ago
 Variables.m
  
- Will change later
+ 
+As of the python rewrite project, this repository will not be maintained
